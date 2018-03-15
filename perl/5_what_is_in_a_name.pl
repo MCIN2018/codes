@@ -154,6 +154,108 @@ print "\n *****  map expr,list *******\n";
 @array_maped_152= map $_ * 3 + 1 , @array_152;
 print " the mapped list is: @array_maped_152\n";
 
+print "\n\n ***** pop,push,shift,splice,split ********\n";
+
+print "------------pop\n";
+@array_161=("Chinese","English","French","Burmese","Pali");
+$pop_162=pop(@array_161);
+print "The string of pop for array_161 is: $pop_162 .\n";
+print "Array_161 after poped becomes: @array_161 \n";
+
+print "------------push\n";
+@array_167=("Chinese","English","French","Burmese","Pali");
+print "The original array is: @array_167 \n";
+push(@array_167,"Japanese");
+print "after pushing Japanese, the array becomes:@array_167 \n";
+
+print "------------shift\n";
+@array_172=("China","Korea","Japan","Russia");
+$shift_1=shift @array_172;
+
+print "the shifted element is $shift_1 \n";
+print "The oringal becomes @array_172 \n";
+
+print "------------splice\n";
+@array_179=("Chinese","English","French","Burmese","Pali");
+print "The oringal array is : @array_179 \n";
+
+@array_splice_1=splice(@array_179);
+print "Now, the array is @array_179 \n";
+print "and the new array is @array_splice_1 \n";
+
+@array_186=("Chinese","English","French","Burmese","Pali");
+print "The original array is @array_186.\n";
+@array_splice_2=splice(@array_186, 2, 2,"SPLICE_1","SPLICE_2"); #  offest 2-2, and the last list replace them.
+print "Now, the array is @array_186. \n";
+print "and the new array is @array_splice_2. \n";
+
+print "\n----- split-----\n";
+$string_193="1 2 3 4 5 6";
+@array_194=split (' ',$string_193);
+print "element 1 is $array_194[0]\n";
+print "element 2 is $array_194[1]\n\n";
+
+
+open(DATA,"DATA_5") or die;
+@array_204=(<DATA>);
+
+=pod
+foreach $array_shift_2 (@array_204) {
+    print "$_\n";
+    #@array_split=split(":");
+    # print "$array_split[0]\n";
+ } I don't know why, it doesn't work!! :-(
+=cut
+
+for ($i=0; $i <= $#array_204 ; $i++) {
+    # print "$array_204[$i]\n";
+    @array_shift_2=split(":",$array_204[$i]);
+    #print "@array_shift_2 \n";
+    print " $array_shift_2[0]\n";
+    
+    ($name,$phone,$address)=split(":",$array_204[$i]);
+    print "name- $name,phone-$phone  address-$address\n";
+    
+    ($name,$phone,$address)=split(":",$array_204[$i],2); # only two elements will be save. the last one will contian the rest of the string, no matter how long it is
+    print "name- $name,phone-$phone  address-$address\n";
+    
+}
+
+print "\n ****** sort ******\n";
+@array_225=("Cat","Horse","Dog","Tiger");
+print "The oringal array is @array_225 \n";
+@a_226=sort(@array_225); # or sort @array_225
+print "New sorted array is: @a_226.\n";
+@a_229=reverse (sort @array_225);
+print "the reversed sorted array is @a_229\n";
+
+sub asc_sort
+{
+    $a cmp $b;
+}
+@a_236= sort asc_sort (@array_225);
+print "array with sub sorted : @a_236 \n";
+@a_238=asc_sort(@array_225);
+print "The array with sub is: @a_238 \n"; # failure, don't understand.
+
+sub numberic_sort
+{
+    $a <=> $b;
+}
+
+@a_246=sort numberic_sort (0.3 ,4, 29, -12, 567, 2, 456);
+
+print "The space ship operator sorted array is: @a_246  \n";
+
+
+print "\n****** unshift *******\n";
+
+@a_253=("Hello","Ciao","Bonjour","Sault");
+print "The original array is               @a_253\n";
+@a_254=unshift(@a_253,"Nihao","Hola");
+print "After unshift,the original array is @a_253\n";
+print "The new array after unshift is:     @a_254. \n";
+
 
 
 
