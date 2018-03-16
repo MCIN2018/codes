@@ -257,16 +257,91 @@ print "After unshift,the original array is @a_253\n";
 print "The new array after unshift is:     @a_254. \n";
 
 
+###### Hash, 5.5.
+
+print "\n ***** hash keys,values,each,sort   ****\n";
+
+%h_264=('1'=>'Mondy',
+        '2'=>'Tuesday',
+        '3'=>'Wensday',
+        '4'=>'Thursday',
+        '5'=>'Friday',
+        '6'=>'Saturday',
+        '7'=>'Sunday',
+        );
+foreach $keys( sort keys(%h_264))
+{
+    print "The key is: $keys\n";
+}
+
+foreach $value ( values(%h_264))
+{
+    print " The value is $value \n";
+}
+
+while (($key,$value)=each(%h_264))
+{
+    print "$key,$value \n";
+}
+
+#sort reverse
+
+foreach $value_289(reverse sort (%h_264))
+{
+    print "$value_289 , $h_264{$value_289} \n";
+}
+
+sub sort_asc
+{
+    # $a <=> $b;
+    $b <=> $a; # desc
+}
+
+foreach $keys( sort sort_asc keys(%h_264))
+{
+    print "The key is: $keys\n";
+}
+
+%h_305=('1'=>'1',
+'Tuesday'=>'2',
+'Wensday'=>'3',
+'Thursday'=>'4',
+'Friday'=>'5',
+'Saturday'=>'6',
+'Sunday'=>'7',
+);
+sub sort_asc_value
+{
+    #$hash{$a} <=> $hash{$b};
+    $h_305{$a} <=> $h_305{$b};
+}
+
+foreach $keys( sort sort_asc_value keys(%h_305))
+{
+    print "$keys: $h_305{$keys}\n";
+}
 
 
+print "\n hash's delete funtion\n";
+
+$delete_327=delete $h_305{1};
+print "The delete is: $delete_327 \n";
+foreach $keys( keys(%h_305))
+{
+    print " The rest is: $keys: $h_305{$keys}\n";
+}
+
+print "\n ----- exists  of hash ------\n";
+
+print " exist Friday-> $h_305{Friday} \n" if exists $h_305{Friday};
 
 
-
-
-
-
-
-
+=pod
+if exists $h_305{Friday}
+{
+    print " exist Friday-> h_305{Friday} \n";
+}
+=cut
 
 
 
