@@ -102,9 +102,37 @@ foreach (@a_17)
 }
 print "*" x 30 ,"\n\n";
 #10.    Print the names of those making over $40,000.
+print "10 Print the names of those making over \$40000\n";
+foreach (@a_17)
+{
+    chomp ($_);
+    @a_108=split(":",$_);
+    print " $a_108[0]\n" if $a_108[4] > 40000;
+}
 
 print "*" x 30 ,"\n\n";
 #11.    Print the names and birthdays of those people born in June.
+print "11.    Print the names and birthdays of those people born in June.\n";
+foreach (@a_17)
+{
+    chomp ($_);
+    @a_119=split(":",$_);
+    print " $a_119[0],$a_119[3]\n" if $a_119[3] =~ /^6\//;
+}
 print "*" x 30 ,"\n\n";
 #12.    Print the zip code for Massachusetts.
-print "*" x 30 ,"\n\n";
+print "12.    Print the zip code for Massachusetts.\n";
+foreach (@a_17)
+{
+    chomp ($_);
+    print " $a_119[0].\n" if /Massachusetts/;
+}
+
+
+
+
+
+
+
+
+
