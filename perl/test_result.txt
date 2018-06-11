@@ -1,0 +1,12 @@
+Testcase_1
+0 1 1
+Testcase_2
+0 0 1
+Testcase_3
+1 0 1
+Testcase_4
+0 0 1
+Testcase_5
+1 1 1
+testcase_6
+0 1 1

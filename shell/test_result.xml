@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="GBK"?>
+<result>
+<Testcase_1>Testcase_1: 
+PASSED
+</Testcase_1>
+<Testcase_2>Testcase_2: 
+FAILED
+</Testcase_2>
+<Testcase_3>Testcase_3: 
+SKIP
+</Testcase_3>
+<Testcase_4>Testcase_4: 
+FAILED
+</Testcase_4>
+<Testcase_5>Testcase_5: 
+INVAILD.Please check the result!
+</Testcase_5>
+</result>

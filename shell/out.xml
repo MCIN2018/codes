@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="GBK"?>
+<result>
+    <testcase_1> testcase1:PASSED</testcase_1>
+    <testcase_2>testcase_2:FAILED</testcase_2>
+    <testcase_3>testcase3:SKIP</testcase_3>
+</result>
