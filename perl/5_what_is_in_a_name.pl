@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+print "\n\n\n\n";
+print "-" x 300;
 $now=`date`;
 print "The date is: $now\n";
 $var="net";
@@ -344,5 +346,41 @@ if exists $h_305{Friday}
 =cut
 
 
+
+
+##### added 20190323
+#read function
+=pod
+print "Describe your favorite food in 10 bytes or less.\n";
+print "If you type less than 10 characters, press Ctrl-d on a line by itself.\n";
+print "localtime is :",localtime(),"\n";
+$number20190323=read(STDIN,$favourite,10);
+
+print "\n you just typed $favourite.\n";
+print "The number of bytes read was $number20190323.\n";
+
+###### getc function
+$restofit=<>; # <> store　the input buff content.
+print "restofit is $restofit \n";
+
+print "Answer Y or N \n";
+$answer=getc;
+print "$answer.\n";
+$restofit=<>;
+print "what kept in input buff is $restofit \n";
+=cut
+
+####chop chomp for array assignment
+ @line=("red\n", "green", "orange");
+ $chop_today=chop(@line);   # Chops the last character off each
+print "chop_today is $chop_today.\n";
+# string in the list
+print "@line";
+print "\n";
+@line=( "red\n", "green\n", "orange");
+$chomp_today=chomp(@line);  # Chomps the newline off each string in the list
+print "@line";
+print "\n";
+print "chomp_today is $chomp_today.\n";
 
 

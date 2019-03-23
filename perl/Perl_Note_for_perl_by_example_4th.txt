@@ -1,0 +1,147 @@
+
+###############
+################
+
+5章： what’s in a name
+
+##################
+##################
+
+Single quotes are the "democratic" quotes. All characters enclosed within them are treated equally; in other words, there are no special characters. But the double quotes discriminate. They treat some of the characters in the string as special characters. The special characters include the $ sign, the @ symbol, and escape sequences such as \t and \n.
+单引号里的一切都按原样打印出来，双引号会解释特殊字符，比如$ \t \n等。 所以要打印出特殊字符要放在单引号里。
+
+If a string is enclosed in single quotes, it is printed literally (what you see is what you get).
+
+　所见即所得。
+
+*******
+Curly Braces
+可以替换变量。
+1   $var="net";
+2   print "${var}work\n";
+
+(Output)
+2   network
+
+********
+The $_ Scalar Variable: hold the default search pattern or the current line.:存贮当前值 
+:::::::::: 
+>perl -e ' $_="Christine"; print "$_\n";'
+(Output:)
+Christine
+
+
+***********Arrays:**********
+Perl doesn't care whether the elements of an array are of the same data type. They can be a mix of numbers and strings 数组类型是什么都可以，不要求所有元素一致。
+@pals = ( "John", "Sam", "Nicky", "Jake" )；
+
+The special scalar variable $#arrayname returns the number of the last subscript in the array. Since the array subscripts start at zero, this value is one less than the array size.  $#返回最后一个值的位置，可是因为数组从0开始计数，这个值比数组个数少1
+
+***The Range Operator and Array Assignment ： 范围运算符，注意.. 前后均有空格
+@digits=(0 .. 10);
+ @letters=( 'A' .. 'Z' );
+ @alpha=( 'A' .. 'Z', 'a' .. 'z' );
+@n=( -5 .. 20 );
+
+
+************
+5.2.3. Hashes
+**********
+%days=("Mon" => "Monday",
+           "Tue" => "Tuesday",
+           "Wed" => undef,
+          );
+
+
+
+*******************
+5.3. Reading from STDIN
+
+***********************
+The three filehandles STDIN, STDOUT, and STDERR
+
+***chop and chomp ****
+
+chop砍掉最后一个字符，不论是什么。chmop砍掉最后一个字符，只有当它是换行的时候。
+1   print "Hello there, and what is your name? ";
+2   $name = <STDIN>;
+3   print "$name is a very high class name.\n";
+4   chop($name);   # Removes the last character no matter what it is.
+5   print "$name is a very high class name.\n\n";
+6   chop($name);
+7   print "$name has been chopped a little too much.\n";
+8   print "What is your age?  ";
+9   chomp($age=<STDIN>); # Removes the last character if
+                         # it is the newline.
+10  chomp($age);         # The last character is not removed
+                         # unless a newline.
+11  print "For $age, you look so young!\n";
+
+(Output)
+1   Hello there, and what is your name? Joe Smith
+3   Joe Smith
+    is a very high class name.
+5   Joe Smith is a very high class name.
+
+7   Joe Smit has been chopped a little too much.
+
+8   What is your age？ 25
+11  For 25, you look so young!
+
+****************
+read function
+
+number_of_bytes = read(FILEHANDLE,buffer,how_many_bytes);
+If reading from standard input, the filehandle is STDIN.  如果是从标准输入读入，那么文件句柄是STDIN
+
+$number=read(STDIN, $favorite, 10);
+The 10 characters read in are printed. The rest of the characters were discarded. 只有10个存进favorite 里的，后面的都被忽略了。
+
+
+************
+getc function
+
+$restofit=<>;  # <> store　the input buff content.  <>里存缓存中的内容。 是什么就存什么。
+
+print "Answer Y or N \n";
+$answer=getc;
+print "$answer.\n";   #通过这样的方式获得
+
+
+**************
+Assigning Input to an Array： 　从终端为数组赋值
+
+@all = <STDIN>;
+print "@all";
+print "The number of elements in the array are: ",
+           $#all + 1, ".\n";
+print "The first element of the array is: $all[0]";
+
+
+**************
+5.4. Array Functions
+
+**************
+chop and chomp 和之前叙述类似， 不过，chop 返回的是它最后砍掉的变量，chomp返回的是它砍掉的变量的个数。
+
+The chop function chops off the last character of a string and returns the chopped character, usually for removing the newline after input is assigned to a scalar variable. If a list is chopped, chop will remove the last letter of each string in the list.
+The chomp function removes the last character of each element in a list if it ends with a newline and returns the number of newlines it removed.
+
+一个栗子： 注意它们对应的输出。 看如何chop不论最后一个字符是什么，都无情删掉，最后保存最后一个删掉的字符，chomp只删掉换行，保存的是删掉的数量，而不是内容：
+ @line=("red\n", "green", "orange");
+ $chop_today=chop(@line);   # Chops the last character off each
+1:print "chop_today is $chop_today.\n";
+# string in the list
+2: print "@line";
+print "\n";
+@line=( "red\n", "green\n", "orange");
+$chomp_today=chomp(@line);  # Chomps the newline off each string in the list
+3: print "@line";
+print "\n";
+4: print "chomp_today is $chomp_today.\n";
+
+（output)
+1: chop_today is e.
+2: red gree orang
+3: red green orange
+4: chomp_today is 2.
