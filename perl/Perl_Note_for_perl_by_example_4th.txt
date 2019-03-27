@@ -145,3 +145,582 @@ print "\n";
 2: red gree orang
 3: red green orange
 4: chomp_today is 2.
+
+********
+5.4.2. The exists Function
+
+The exists function returns true if an array index (or hash key) has been defined, and false if it has not. 数组索引存在也返回真，否则假。
+
+@names=('Chris', 'Lynn' ,'Joanna');
+print " Hello $names[0]\n", if exists $names[0];
+print " Out of range\n", if not exists $names[4];
+$exist_test_ture= exists $names[0];
+$exist_test_faule= not exists $names[4];
+print "exist_test_ture result is $exist_test_ture; exist_test_faule result is $exist_test_faule.\n";
+
+(Output)
+ Hello Chris
+ Out of range
+exist_test_ture result is 1; exist_test_faule result is 1. # 如果是 $exist_test_faule=  exists $names[4]; 返回值是空
+
+
+********
+5.4.3. The delete Function
+
+The delete function allows you to remove a value from an element of an array but not the element itself. The value deleted is simply undefined. 删除掉指定的数组元素的值。该值成为未定义。数组大小不变。
+1 @colors=("red","green","blue","yellow");
+2  print "@colors\n";
+3 delete $colors[1];  # green is removed
+4 print "@colors\n";
+5 print $colors[1],"\n";
+6 $size=@colors;      # value is now undefined
+7 print "The size of the array is $size.\n";
+
+(Output)
+2 red green blue yellow
+4 red  blue yellow
+7 The size of the array is 4.
+
+
+**********
+5.4.4. The grep Function
+grep(EXPR,LIST)返回值是一个找到的结果的数组。如果是As a scalar value, the return value is the number of times the expression was true (i.e., the number of times the pattern was found).
+
+@grep_test=("English","French","German","Chinese","Ten");
+@grep_test_result=grep (/en/i,@grep_test);
+$grep_test_result=grep (/en/i,@grep_test);
+print "\@grep_test_result is @grep_test_result.\n";
+print "\$grep_test_result is $grep_test_result.\n";
+(Output)
+@grep_test_result is English French Ten.
+$grep_test_result is 3.
+
+
+***********
+5.4.5. The join Function
+join(DELIMITER, LIST)  The join function joins the elements of an array into a single string and separates each element of the array with a given delimiter. 把一系列的数组元素连成一个串，用给定的分隔符分割。是split的反操作。
+
+$you="You";
+$are="are";
+$fool="a fool";
+$youareafool=join(" ",$you,$are,$fool);
+@youareafool=join(" ",$you,$are,$fool);
+@youareafool_1=join("-",$you,$are,$fool);
+@youareafool_2=join("\n",$you,$are,$fool);
+print "\$youareafool is $youareafool. \n";
+print "\@youareafool is @youareafool. \n";
+print "The second element of \@youareafool is $youareafool[1].\n ";
+print "\@youareafool_1 is @youareafool_1. \n";
+print "The first element of \@youareafool_1 is $youareafool_1[0].\n ";
+print "\@youareafool_2 is @youareafool_2. \n";
+print "The first element of \@youareafool_2 is $youareafool_2[0].\n ";
+print "The Second element of \@youareafool_2 is $youareafool_2[1].\n ";
+
+print " The size of \@youareafool_1 is ",$#youareafool_1 +1 ,"\n";
+print " The size of \@youareafool_2 is ",$#youareafool_2 +1 ,"\n";
+
+(Output)
+$youareafool is You are a fool. 
+@youareafool is You are a fool. 
+The second element of @youareafool is .
+ @youareafool_1 is You-are-a fool. 
+The first element of @youareafool_1 is You-are-a fool.
+ @youareafool_2 is You
+are
+a fool. 
+The first element of @youareafool_2 is You
+are
+a fool.
+ The Second element of @youareafool_2 is .
+
+The size of @youareafool_1 is 1
+ The size of @youareafool_2 is 1
+#非常有意思的情况。 说明，join 的结果就是一个串。你可以把它存成一个数组，但结果是，这个数组只有一个元素，就是它的第一个元素.
+
+
+数组的个数两种计算方法
+
+@array_123=("Spring","Summer","Autumn","winter");
+$count_123=@array_123;
+print " the number of elements in the array is : $count_123 \n";
+print " the number of elements in the array is :",  $#count_123 +1," \n";
+
+***************
+5.4.6. The map Function
+
+就是把指定的列表数据，用指定的表达展现出来
+
+map EXPR, LIST;
+map {BLOCK} LIST;
+
+一个栗子
+print "\n *** map {BLOCK} list ****\n";
+open(FH,"datebook.master") or die;
+@array_132=<FH>;
+print "The original array is: @array_132\n";
+#有这两种实现方式
+@array_after_map= map {split(":")} @array_132;
+@array_20190325=map split(":"),@array_132;
+# 此两种方法输出一样，都是
+print "The mapped array: @array_after_map\n";
+print "The mapped array at 20190325 is : @array_20190325\n";
+
+***************
+5.4.8. The pop Function
+The pop function pops off the last element of an array and returns it. The array size is subsequently decreased by 1 
+pop(ARRAY)
+pop ARRAY
+
+#两种实现形式都可以
+$pop_162=pop(@array_161);
+print "The string of pop for array_161 is: $pop_162 .\n";
+print "The string of pop for20190325  is:" , pop @array_161, ".\n";
+
+
+********
+5.4.9. The push Function
+The push function pushes values onto the end of an array, thereby increasing the length of the array.
+push(ARRAY, LIST)
+
+push(@names, "Jim", "Joseph", "Archie");
+
+
+**********
+5.4.10. The shift Function
+The shift function shifts off and returns the first element of an array, decreasing the size of the array by one element. If ARRAY is omitted, then the ARGV array is shifted, and, if in a subroutine, the @_ array is shifted. 移除数组的第一个函数。 移除最后一个用的是pop函数
+
+shift(ARRAY)
+shift ARRAY
+shift
+
+$shift_1=shift @array_172;
+
+
+*********************
+5.4.11. The splice Function
+The splice function removes and replaces elements in an array. 移除数组元素，（或者移除后也替换上新的元素）
+
+splice(ARRAY, OFFSET, LENGTH, LIST)
+splice(ARRAY, OFFSET, LENGTH)
+splice(ARRAY, OFFSET)
+
+OFFEST是开始位置（就是从第几个数组元素开始），length 是要替换的长度（其实是数组元素的个数），LIST是The LIST consists of new elements that are to replace the old ones，其实就是把原数组里移除了的数据用这个list里的元素补充上。 见下面第二个栗子
+
+#####
+@discarded = splice(@colors, 2, 2);
+
+#### 另一个栗子：
+1   @colors=("red", "green", "purple", "blue", "brown");
+2   print "The original array is @colors\n";
+3   @lostcolors=splice(@colors, 2, 3, "yellow", "orange"); # 把这俩元素填补上移除的那三个。只补上了两个，当然。
+4   print "The removed items are @lostcolors\n";
+5   print "The spliced array is now @colors\n";
+
+(Output)
+2   The original array is red green purple blue brown 
+4   The removed items are purple blue brown # offset is initially 0， so starting at offset 2 ( the third element) 从第三个元素开始，总共3个
+5   The spliced array is now red green yellow orange # 注意这里的输出
+
+
+*************
+
+5.4.12. The split Function
+
+The split function splits up a string (EXPR) by some delimiter (whitespace by default) and returns an array. 把数组元素用指定的分隔符，依据指定的表达式来分割。 分割成几个串可以用 limit来定义，比如本来可以分成5个，可就设定为2个，那最后一个就把从第二个分隔符开始的都包含进去了。
+split("DELIMITER",EXPR,LIMIT)
+split(/DELIMITER/,EXPR,LIMIT)
+split(/DELIMITER/,EXPR)
+split("DELIMITER",EXPR)
+split(/DELIMITER/) ## 默认的知道哪个是当前数组的情况  while(<DATA>){ @line=split(":");....
+split
+
+DELIMITER是分割符，默认是空白分割（空格、　tab 或回车换行符）， eXPR是要分割的串，limit是the number of fields that can be split
+
+#一个栗子
+1   $line="a b c d e";
+2   @letter=split(' ',$line);
+
+#两个栗子：
+        while(<DATA>){
+     1       ($name,$phone,$address,$bd,$sal)=split(":");
+     2       print "$name\t $phone\n" ;
+         }
+_ _DATA_ _
+......
+
+#三个栗子
+1   $string= "Joe Blow:11/12/86:10 Main St.:Boston, MA:02530";
+6   @str=split(":", $string, 2);
+7   print $str[0],"\n";  # The first element of the array
+8   print $str[1],"\n";  # The rest of the array because limit is 2
+9   print $str[2],"\n";  # Nothing is printed
+#因为指定为分割为两个（limit），所以第二个字段就把所有的剩下的都划在里面了。
+
+********
+5.4.13. The sort Function
+
+sort(SUBROUTINE LIST)
+sort(LIST)
+sort SUBROUTINE LIST
+sort LIST
+
+The sort function doesn't change the orginial list.
+
+If SUBROUTINE is specified, the first argument to sort is the name of the subroutine, followed by a list of values to be sorted. 如果指定了subroutine，那么第一个参数就是要怎么来排序的这个子函数，下一个参数才是要应用这个子函数的逻辑来排序的目标串
+
+If the string "cmp" operator is used, the values in the list will be sorted alphabetically (ASCII sort),(cmp是字符比较） and if the <=> operator (called the "space ship" operator) is used, the values will be sorted numerically. （《=》是数学比较）
+
+The subroutine returns an integer less than, equal to, or greater than 0. The values are passed to the subroutine by reference and are received by the special Perl variables $a and $b, not the normal @_ array. 这个子函数会根据比较结果返回01-1一类的值，用来传递回$a $b 所以这俩是有特殊意义的，别随便定义修改它们。
+(See subroutines in Chapter 11 for further discussion.) Do not try to modify $a or $b, as they represent the values that are being sorted.
+
+#栗子：ASCII and Numeric Sort Using Subroutine
+1 @list=("dog","cat", "bird","snake" );
+  print "Original list: @list\n";
+   # ASCII sort using a subroutine
+2  sub asc_sort{
+3          $a cmp $b;  # Sort ascending order。如果要降序，就是$b cmp $a
+   }
+4  @sorted_list=sort asc_sort(@list);
+   print "Ascii sort: @sorted_list\n";
+
+   # Numeric sort using subroutine
+5  sub numeric_sort {
+       $a <=> $b ;
+   }  ######## $a and $b are compared numerically，是升序的，If $a and $b are reversed (e.g., $b <=> $a), then the sort is done in numeric descending order
+
+6  @number_sort=sort numeric_sort 10, 0, 5, 9.5, 10, 1000;
+   print "Numeric sort: @number_sort.\n";
+
+
+####Using an Inline Function to Sort a Numeric List 把小子函数直接写进一个命令里：
+1   @sorted_numbers= sort {$a <=> $b} (3,4,1,2);
+2   print "The sorted numbers are: @sorted_numbers", ".\n";
+####
+@array=sort {$a cmp $b} Anna,Holy,Chris,Emma;   字符如此。
+
+
+*********
+5.4.14. The reverse Function
+The reverse function reverses the elements in an array
+
+@reversed=reverse(@names),"\n";
+
+********
+5.4.15. The unshift Function
+The unshift function prepends LIST to the front of the array. 在一个数组前插入元素，所以插入的元素会在数组的开头 在结尾追加元素是用push函数。
+
+1   @names=("Jody", "Bert", "Tom") ;
+2   unshift(@names, "Liz", "Daniel");
+3   print "@names\n";
+
+(Output)
+3   Liz Daniel Jody Bert Tom
+
+
+
+
+
+************
+
+5.5. Hash (Associative Array) Functions
+
+************
+5.5.1. The keys Function
+The keys function returns, in random order, an array whose elements are the keys of a hash 随机的返回键值，组成数组。
+
+2   foreach $key ( keys(%weekday) ){print "$key ";}。#随机打印。
+    print "\n";
+3   foreach $key ( sort keys(%weekday) ){print $key ;}
+    print "\n";
+
+**********
+5.5.2. The values Function
+The values function returns, in random order, an array consisting of all the values of a hash. 随机返回内容，组成数组
+
+foreach $value ( values(%weekday)){print "$value";}
+
+********
+5.5.3. The each Function
+The each function returns, in random order, a two-element array whose elements are the key and the corresponding value of a hash.
+
+while(($key,$value)=each(%weekday)){
+3      print "$key = $value\n";
+
+
+
+**********
+5.5.4. Sorting a Hash
+
+按照健字母顺序排序很容易，用内嵌的sort函数就可以完成，可如果按照内容（values）排序，就有点麻烦了，需要用子函数来排。方法和数组部分讲的sort方法差不多。规则和禁戒也相同。
+
+*******Sort Hash by Keys in Ascending Order
+
+To perform an Ascii or alphabetic sort on the keys in a hash is relatively easy. The sort() function is given a list of keys and returns them sorted in ascending order. A foreach loop is used to loop through the hash one key at a time。 
+
+foreach $value_289(reverse sort (%h_264))
+{
+    print "$value_289 , $h_264{$value_289} \n";
+}
+
+
+*****Sort Hash by Keys in Reverse Order
+
+foreach $keys ( reverse sort keys %h_264)
+{
+    print "--reverse----$keys-----$h_264{$keys}\n";
+}
+
+*********Sort Hash by Keys Numerically
+
+# numerically
+foreach $keys ( sort {$b <=> $a} keys %h_264)  {print "-numerically-----$keys-----$h_264{$keys}\n";}
+#alphabetically
+foreach $keys ( sort {$a cmp $b} keys %h_264)  {print "-alphabetically-----$keys-----$h_264{$keys}\n";}
+
+**********Numerically Sort a Hash by Values in Ascending Order
+#要用一个子函数，把哈希的values进行排序，方法是通过键值，sub hash_sort{$hash{$a} <=> $hash{$b};} 可以直接内嵌，就成了下面这样的。不要用values直接来做，因为那样只有values， 你怎么得到keys啊，没有keys ，哈希也不好使了啊
+foreach $keys(sort { $h_305{$a} <=> $h_305{$b} } ( keys (%h_305)))
+{
+    print "sort by value numerically: $keys---$h_305{$keys}.\n";
+}
+
+**********Numerically Sort a Hash by Values in Descending Order
+
+sub hash_desc_sub
+{
+    $h_305{$b} <=> $h_305{$a};
+}
+foreach $keys( sort hash_desc_sub keys %h_305 )
+{
+    print "sort by value numerically descending: $keys---$h_305{$keys}.\n";
+}
+
+
+
+
+*************
+5.5.5. The delete Function
+
+The delete function deletes a value from a hash. The deleted value is returned if successful 返回值就是那个被删除掉的value
+
+  $layoff=delete $employees{"Janitor"};
+    print "We had to let $layoff go.\n";
+#然后剩下：
+    while(($key, $value)=each(%employees)){
+       print "$key: $value\n";
+    }
+
+*************
+5.5.6. The exists Function
+The exists function returns true if a hash key (or array index) has been defined, and false if not.
+
+print " exist Friday-> $h_305{Friday} \n" if exists $h_305{Friday};
+
+
+
+************************
+************************
+
+Chapter 6. Where's the Operator?
+
+***********************
+*************************
+
+
+*******
+6.3.1. Assignment Operators
+
+$var += 3;
+print "\$var += 3 is $var \n";
+
+$var -= 1;
+print "\$var -=  1 is $var \n";
+
+$name .="ny";
+print "the full of \$name is  $name \n";
+
+$line x= 10;
+print "$line\n";
+
+printf "\$var is %.2f\n",$var=4.2 + 2.3 ;
+
+(Output)
+
+$var += 3 is 3 
+$var -=  1 is 2 
+the full of $name is  Danny 
+**********
+$var is 6.50
+
+
+********
+6.3.2. Relational Operators
+
+Relational operators are used to compare operands. The result of the comparison is either true or false.[3] Perl has two classes of relational operators: one set that compares numbers and another that compares strings.  比较操作数，返回真或假，有两套，一套比较字符串，另一套比较数字。
+
+Relational Operators and Numeric Values
+Operator	Example	Meaning
+>		$x > $y   $x is greater than $y
+>=		$x >= $y	$x is greater than or equal to $y
+<		$x < $y	$x is less than $y
+<=		$x <= $y	$x is less than or equal to $y
+
+
+Relational Operators and String Values
+Operator	Example			Meaning
+gt		$str1 gt $str2		$str1 is greater than $str2
+ge		$str1 ge $str2		$str1 is greater than or equal to $str2
+lt		$str1 lt $str2		$str1 is less than $str2
+le		$str1 le $str2		$str1 is less than or equal to $str2
+
+
+Equality Operators and Numeric Values
+Operator	Example			Meaning
+==		$num1 == $num2		$num1 is equal to $num2
+!=		$num1 != $num2		$num1 is not equal to $num2
+<=>		$num1 <=> $num2		$num1 is compared to $num2 with a signed return; 1 if $num1 is greater than $num2, 0 if $num1 is equal to $num2, and -1 if $num1 is less than $num2
+
+Equality Operators and String Values
+Operator	Example			Meaning
+eq		$str1 eq $str2		$str1 is equal to $str2
+ne		$str1 ne $str2		$str1 is not equal to $str2
+cmp		$str1 cmp $str2		$str1 is compared to $str2, with a signed return
+
+
+#### Don't use == when you should use eq!
+1   $x = "yes";
+    $y = "no";
+    print "\nIs yes equal to no? If so, say 1; if not say 'null'.\n";
+2   print "The result is: ",$x == $y,"\n";    # Should be $x eq $y
+
+(Output)
+1   Is yes equal to no? If so, say 1; if not say 'null'.
+2   The result is: 1. # 其实应该返回0才对，这样 yes居然等于no了。所以对串比较，千万别用==那是比较数字的。
+
+
+
+##############
+6.3.4. Logical Operators (Short-Circuit Operators)
+
+Operator	Alternative Form	Example		Meaning
+&&			and			$x && $y		If $x is true, evaluate $y and return $y
+ 	 					$x and $y		If $x is false, evaluate $x and return $x
+||			or			$x || $y		If $x is true, evaluate $x and return $x
+ 	 					$x or $y		If $x is false, evaluate $y and return $y
+ 			xor			$x xor $y		True if $x or $y is true, but not both
+!			not			! $x			Not $x; true if $x is not true
+ 	 					not $x	 
+
+######Arithmetic Operators
+Operator	Example	Meaning
++		$x + $y	Addition
+-		$x - $y	Subtraction
+*		$x * $y	Multiplication
+/		$x / $y	Division
+%		$x % $y	Modulus
+**		$x ** $y	Exponentiation
+
+
+######6.3.7. Autoincrement and Autodecrement Operators
+
+Example	Description	Equivalence
+++$x		Preincrement	$x = $x + 1
+$x++		Postincrement	$x = $x + 1
+--$x		Predecrement	$x = $x - 1
+$x--		Postdecrement	$x = $x - 1
+
+
+Autoincrement and Autodecrement Operators and Assignment
+Example						Description	 							Equivalence			Result
+If $y is 0 and $x is 0: $y = $x++;	Assign the value of $x to $y, then increment $x	$y = $x; $x = $x + 1;	$y is 0 $x is 1
+If $y is 0 and $x is 0: $y = ++$x;	Increment $x, then assign $x to $y				$x = $x + 1; $y = $x;	$x is 1 $y is 1
+If $y is 0 and $x is 0: $y = $x--;	Assign the value of $x to $y, then decrement $x	$y = $x; $x = $x - 1;	$y is 0 $x is -1
+If $y is 0 and $x is 0: $y = --$x;	Decrement $x, then assign $x to $y				$x = $x - 1; $y = $x;	$x is -1 $y is-1
+
+
+######6.3.8. Bitwise Logical Operators
+
+
+ Bitwise Logical Operators
+
+Operator	Example	Meaning
+&		$x & $y	Bitwise and
+|		$x | $y	Bitwise or
+^		$x ^ $y	Bitwise exclusive or
+<<		$x << 1	Bitwise left shift, integer multiply by two
+>>		$x >> 1	Bitwise right shift, integer divide by two
+
+
+Resulting Values of Bitwise Operators
+
+$x	$y	$x & $y	$x | $y	$x ^ $y
+0	0		0		0	0
+0	1		0		1	1
+1	0		0		1	1
+1	1		1		1	0
+
+***************
+6.3.9. Conditional Operators
+conditional expression ? expression : expression
+$x ? $y : $z
+
+**************
+6.3.10. Range Operator
+The range operator is used in both scalar and array context. In a scalar context, the value returned is a Boolean, 1 or 0. In an array context, it returns a list of items starting on the left side of the operator and counting by ones until the value on the right-hand side is reached.标量和数组都可以用。标量应用中，返回布尔值，0或1.数组中，返回范围内的值称为一个列表。
+
+
+***********
+6.3.11. Special String Operators and Functions
+
+String Operations
+Example					Meaning
+$str1 . $str2				Concatenate strings $str1 and $str2
+$str1 x $num				Repeat $str1, $num times
+substr($str1, $offset, $len)	Substring of $str1 at $offset for $len bytes
+index($str1, $str2)			Byte offset of string $str2 in string $str1
+length(EXPR)				Returns the length in characters of expression, EXPR
+rindex($str, $substr, POSITION)		Returns the position of the last occurrence of $substr in $str.
+							If POSITION is specified, start looking there.
+							If POSITION is not specified, start at the end of the string.
+chr(NUMBER)				Returns the character represented by that NUMBER in the ASCII character set. For example, chr(65) 							is the letter A.
+lc($str)					Returns a lowercase string
+uc($str)					Returns an uppercase string
+
+
+*********
+6.3.12. Arithmetic Functions
+
+Built-in Perl Arithmetic Functions
+atan2(Y,X)					Returns the arctangent of Y/X in the range â€“PI to PI.
+cos(EXPR) cos EXPR			Returns the cosine of EXPR (expressed in radians). If EXPR is omitted, takes cosine of $_.
+exp(EXPR) exp EXPR			Returns e to the power of EXPR. If EXPR is omitted, gives exp($_).
+int(EXPR) int EXPR			Returns the integer portion of EXPR. If EXPR is omitted, uses $_.
+log(EXPR) log EXPR			Returns logarithm (base e) of EXPR. If EXPR is omitted, returns log of $_.
+rand(EXPR) rand EXPR rand			Returns a random fractional number between 0 and the value of EXPR. (EXPR should be positive.) 							If EXPR is omitted, returns a value between 0 and 1. See also srand().
+sin(EXPR) sin EXPR			Returns the sine of EXPR (expressed in radians). If EXPR is omitted, returns sine of $_.
+sqrt(EXPR) sqrt EXPR			Return the square root of EXPR. If EXPR is omitted, returns square root of $_.
+srand(EXPR) srand EXPR		Sets the random number seed for the rand operator. If EXPR is omitted, does srand(time).
+
+
+*******Generating Random Numbers
+
+As described in an article by Ian Goldberg and David Wagner concerning Web security, truly random numbers can be found only in nature, such as the rate of decay of a radioactive element.
+
+The srand function sets the random number seed for the rand function but is no longer required if you are using a version of Perl greater than 5.004. A seed is a random number itself that is fed to the random number generator as the starting number from which new random numbers are produced.
+
+while ($num)
+{
+    $rand_164=int(rand($num)) + 1;
+    print "The rand nuber is $rand_164 \n";
+    $rand_167=rand + 1;
+    print "The rand number of nake rand is $rand_167 \n";
+    sleep 3;
+    $num--;
+}
+
+
+***************************
+
+Chapter 7. If Only, Unconditionally, Forever
+
+***************************

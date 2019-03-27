@@ -111,6 +111,19 @@ print "******exists for array *******\n";
 print " Hello $names[0]\n", if exists $names[0];
 print " Out of range\n", if not exists $names[4];
 
+$exist_test_ture= exists $names[0];
+$exist_test_faule= not exists $names[4];
+print "exist_test_ture result is $exist_test_ture; exist_test_faule result is $exist_test_faule.\n";
+
+
+print "******grep function***********\n";
+
+@grep_test=("English","French","German","Chinese","Ten");
+@grep_test_result=grep (/en/i,@grep_test);
+$grep_test_result=grep (/en/i,@grep_test);
+print "\@grep_test_result is @grep_test_result.\n";
+print "\$grep_test_result is $grep_test_result.\n";
+
 
 print "******join function***********\n";
 
@@ -118,16 +131,32 @@ $you="You";
 $are="are";
 $fool="a fool";
 $youareafool=join(" ",$you,$are,$fool);
-print "$youareafool \n";
+@youareafool=join(" ",$you,$are,$fool);
+@youareafool_1=join("-",$you,$are,$fool);
+@youareafool_2=join("\n",$you,$are,$fool);
+print "\$youareafool is $youareafool. \n";
+print "\@youareafool is @youareafool. \n";
+print "The first element of \@youareafool is $youareafool[1].\n ";
+print "\@youareafool_1 is @youareafool_1. \n";
+print "The first element of \@youareafool_1 is $youareafool_1[0].\n ";
+print "\@youareafool_2 is @youareafool_2. \n";
+print "The first element of \@youareafool_2 is $youareafool_2[0].\n ";
+print "The Second element of \@youareafool_2 is $youareafool_2[1].\n ";
+
+print " The size of \@youareafool_1 is ",$#youareafool_1 +1 ,"\n";
+print " The size of \@youareafool_2 is ",$#youareafool_2 +1 ,"\n";
+
 
 print "\n**** join to sort an array for a new one.***********\n";
 
 @array_123=("Spring","Summer","Autumn","winter");
 @array_sorted=join("\n",sort(@array_123));
 $count_123=@array_123;
+$count_sorted=@array_sorted;
 print "the original array is:@array_123\n";
 print " the number of elements in the array is : $count_123 \n";
 print "The sorted array is: @array_sorted \n";
+print "The size sorted array is:", $count_sorted," \n";
 
 print "\n********Map,as a magic!***************\n";
 
@@ -137,8 +166,14 @@ open(FH,"datebook.master") or die;
 print "The original array is: @array_132\n";
 
 @array_after_map= map {split(":")} @array_132;
+@array_20190325=map split(":"),@array_132;
+@array_20190325_2=map split(":",@array_132);
 print "The mapped array: @array_after_map\n";
-
+print "\n";
+print "The mapped array at 20190325 is : @array_20190325\n";
+print "\n";
+print "The mapped array at 20190325 2 is----------- : @array_20190325_2\n";
+print "---------\n\n";
 foreach $array_after_map(@array_after_map)
 {
     print "$array_after_map";
@@ -162,7 +197,8 @@ print "------------pop\n";
 @array_161=("Chinese","English","French","Burmese","Pali");
 $pop_162=pop(@array_161);
 print "The string of pop for array_161 is: $pop_162 .\n";
-print "Array_161 after poped becomes: @array_161 \n";
+print "The string of pop for20190335  is:" , pop @array_161, ".\n";
+print "Array_161 after poped becomes:  @array_161,\n";
 
 print "------------push\n";
 @array_167=("Chinese","English","French","Burmese","Pali");
@@ -176,6 +212,7 @@ $shift_1=shift @array_172;
 
 print "the shifted element is $shift_1 \n";
 print "The oringal becomes @array_172 \n";
+
 
 print "------------splice\n";
 @array_179=("Chinese","English","French","Burmese","Pali");
@@ -249,6 +286,11 @@ sub numberic_sort
 
 print "The space ship operator sorted array is: @a_246  \n";
 
+print "\n\n ****** sort in inline subroutine. ******\n";
+print "lalala",sort {$a <=> $b} (1,5,3,6,2),"\n\n";
+print "\nwawawa",sort {$a cmp $b} Anna,Holy,Chris,Emma,"\n\n";
+@array=sort {$a cmp $b} Anna,Holy,Chris,Emma;
+print "I am back!,@array,\n" ;
 
 print "\n****** unshift *******\n";
 
@@ -288,6 +330,26 @@ while (($key,$value)=each(%h_264))
 
 #sort reverse
 
+foreach $keys ( sort keys %h_264)
+{
+    print "------$keys-----$h_264{$keys}\n";
+}
+
+foreach $keys ( reverse sort keys %h_264)
+{
+    print "--reverse----$keys-----$h_264{$keys}\n";
+}
+# numberically
+foreach $keys ( sort {$b <=> $a} keys %h_264)
+{
+    print "-numberically-----$keys-----$h_264{$keys}\n";
+}
+#alphabetically
+foreach $keys ( sort {$a cmp $b} keys %h_264)
+{
+    print "-alphabetically-----$keys-----$h_264{$keys}\n";
+}
+
 foreach $value_289(reverse sort (%h_264))
 {
     print "$value_289 , $h_264{$value_289} \n";
@@ -312,6 +374,25 @@ foreach $keys( sort sort_asc keys(%h_264))
 'Saturday'=>'6',
 'Sunday'=>'7',
 );
+
+##Numerically Sort a Hash by Values in Ascending Order
+
+foreach $keys(sort { $h_305{$a} <=> $h_305{$b} } ( keys (%h_305)))
+{
+    print "sort by value numerically: $keys---$h_305{$keys}.\n";
+}
+
+#Numerically Sort a Hash by Values in Descending Order
+
+sub hash_desc_sub
+{
+    $h_305{$b} <=> $h_305{$a};
+}
+foreach $keys( sort hash_desc_sub keys %h_305 )
+{
+    print "sort by value numerically descending: $keys---$h_305{$keys}.\n";
+}
+
 sub sort_asc_value
 {
     #$hash{$a} <=> $hash{$b};
@@ -336,6 +417,7 @@ foreach $keys( keys(%h_305))
 print "\n ----- exists  of hash ------\n";
 
 print " exist Friday-> $h_305{Friday} \n" if exists $h_305{Friday};
+
 
 
 =pod
