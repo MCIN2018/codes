@@ -22,3 +22,9 @@ Life is good with perl
 I have just complete my second exercise!
 EOF
 
+##### 20190322
+print <<'MC';
+Life is not really good with perl
+I have to find other funs.
+MC
+

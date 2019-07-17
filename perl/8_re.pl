@@ -104,7 +104,7 @@ foreach (@array_96)
 
 print "-" x 30 , "\n";
 ############
-
+=pod
 while (<DATA>)
 {
     s/6/6 * 7.3 /ge;
@@ -135,4 +135,43 @@ Igor Chevsky
 Norma Cord
 Jon DeLoach
 Karen Evich
+=cut
+print "*" x 100;
+printf "\n\n";
 
+print " -------for x modifier-----\n";
+
+$_= "We are the hope of the world";
+#@result =~ /th/;
+print "Result is $&.\n" if /the    #looking for the patterns
+/x;
+
+$_ = "knock at heaven's door.\n";
+s[knock]{"knock, " x 2 . "knocking"}ie;
+#s/knock/"knock, " x 2 . "knocking"/ie;
+print "He is $_\n";
+
+
+print "*------" x 10 ,"\n";
+
+$salary = 5000;
+
+print $salary,"\n" if $salary=~/5/;
+print "^^^^____" x 10 ,"\n";
+
+$name="either IELTS or BEC is my tagert";
+print $name ,"\n" if $name =~ tr/a-z/A-Z/;
+
+
+while (<DATA>)
+{
+    @a_split = split(":",$_);
+    print $a_split[0],"\n" if $a_split[1] =~ /408/;
+}
+__DATA__
+Steve Blenheim:415-444-6677:12 Main St.
+Betty Boop:303-223-1234:234 Ethan Ln.
+Igor Chevsky:408-567-4444:3456 Mary Way
+Norma Cord:555-234-5764:18880 Fiftieth St.
+Jon DeLoach:201-444-6556:54 Penny Ln.
+Karen Evich:306-333-7654:123 4th Ave.

@@ -1,0 +1,50 @@
+
+
+
+git checkout -b perl_4_example
+
+Then create scripts at this branch, then, push this new branch to Github.
+
+git push -u origin perl_4_example 
+
+
+=======================
+
+1: Guthub:https://github.com
+
+ MCIN2018 : GitHub name 
+ myl2012@hotmail.com/T12…..a
+
+1.1. Create Github account and first repository hello-world
+
+Under your account , find .ssh folder.
+
+To check if id_rsa and id_rsa.pub , if they don’t exist, to create them:
+
+ssh-keygen -t rsa
+
+Add public to Github:setting->adding ssh key
+
+
+====: to clone the remote repository hello-world
+
+ Git clone git@github.com:MCIN2018/hello-world
+
+===: create repository codes and connect it to local repository codes. 
+
+git remote add origin git@github.com:MCIN2018/codes
+   : ssh:git@github.com:MCIN2018/codes.git
+     Https:https://github.com/MCIN2018/codes.git
+
+
+
+=======
+To add a new repositories :
+
+1;To add a repository at Github: resource ( private)
+
+2: TO Clone the remote repository resource to /users/mc/resource
+
+  
+
+Git clone git@github.com:MCIN2018/resource. : This will become /users/mc/resource/resource!!!!  Be careful, to make sure the structure of your folders. 

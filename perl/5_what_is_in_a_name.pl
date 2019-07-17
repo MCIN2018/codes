@@ -465,4 +465,4 @@ print "@line";
 print "\n";
 print "chomp_today is $chomp_today.\n";
 
-
+print "*", x 300,"\n" ;

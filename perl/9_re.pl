@@ -12,7 +12,7 @@
 open(DATA_9,"data_9") || die " file doesn't exist.\n";
 
 @a_5=<DATA_9>;
-print "@a_5\n";
+#print "@a_5\n";
 
 foreach (@a_5)
 {
@@ -23,7 +23,9 @@ print "\n";
 
 $_="Sing a song of sixpence\nA pocket full of rye.\n";
 # print if /pence.A/s ;
-print $& if /pence.A/s ;
+
+print "--Example 9.3-----" ;
+print "-------" ,$& if /pence.A/s ;
 print "\n";
 print if s/sixpence.A/twopence, a/s;
 # output:
@@ -35,13 +37,13 @@ print if s/sixpence.A/twopence, a/s;
 print "character class\n ";
 foreach (@a_5)
 {
-    print if /[a-zA-Z]eve/;
+    print "--------********", $&,"\n" if /[a-zA-Z]eve/;
 }
 print "\n";
 
 foreach (@a_5)
 {
-    print if /[a-zA-Z0-9]/;
+    print "********--------", $&,",$_\n"if /[a-zA-Z0-9]/;
 }
 print "\n";
 

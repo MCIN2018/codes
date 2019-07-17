@@ -724,3 +724,316 @@ while ($num)
 Chapter 7. If Only, Unconditionally, Forever
 
 ***************************
+
+
+Foreach
+The foreach loop iterates over each element in the parenthesized list, an array, assigning each element of the array to a scalar variable, one after the other, until the end of the list.
+
+The VARIABLE is local to the foreach block. It will regain its former value when the loop is exited. Any changes made when assigning values to VARIABLE will, in turn, affect the individual elements of the array. If VARIABLE is not present, the $_ special scalar variable is implicitly used.
+
+foreach VARIABLE (ARRAY)
+{BLOCK}
+
+*******
+7.2.5. Loop Control
+
+
+********
+7.2.6. The switch Statement
+
+switch (expression) {
+  case value1 :
+     /* statements */
+     break;
+  case value2 :
+     /* statements */
+     break;
+  case value3 :
+     /* statements */
+     break;
+  default:
+     /* statements */
+     break;
+}
+
+
+
+****************
+******************
+
+Chapter 8. Regular Expressionsâ€”Pattern Matching
+
+*******************
+******************
+
+
+**********
+8.2.2. The DATA Filehandle
+In the following examples, the special filehandle called DATA is used as an expression in a while loop. This allows us to directly get the data from the same script that is testing it, rather than reading input from a separate text file. (You will learn all about filehandles in Chapter 10, "Getting a Handle on Files.") 
+
+while(<DATA>){.   # ($_=<DATA>) and ($inputline=<DATA>) 也都可以
+    Do something with the data here
+}
+_ _DATA_ _
+    The actual data is stored here
+
+
+
+*******
+The unless Modifier
+
+Expression2 unless Expression1;
+
+$x=5;
+
+
+   print $x unless $x == 6;
+
+
+*********8.2.3. Looping Modifiers
+
+
+
+1   $x=1;
+2   print $x++,"\n" while $x != 5;
+
+1   $x=1;
+2   print $x++,"\n" until $x == 5;
+
+1   @alpha=(a .. z, "\n");
+2   print foreach @alpha;
+
+
+***************
+8.3. Regular Expression Operators
+************
+
+******8.3.1. The m Operator and Matching
+用来指定分隔符，如果是// 可以不用m.，//是默认的分隔符
+/Regular Expression/     default delimiter
+m#Regular Expression#    optional delimiters
+m{regular expression}    pair of delimiters
+
+Matching Modifiers
+Modifier	Meaning
+i		Turn off case sensitivity.
+m		Treat a string as multiple lines.
+o		Compile pattern only once. Used to optimize the search.
+s		Treat string as a single line when a newline is embedded.
+x		Permit comments in a regular expression and ignore whitespace.
+g		Match globally; i.e., find all occurrences. Return a list if used with an array context, or true or false if a scalar context.
+
+**********
+The g Modifier Global Match
+
+1   $_ = "I lost my gloves in the clover, Love.";
+2   @list=/love/g;
+
+*******The i Modifier Case Insensitivity
+
+1   $_ = "I lost my gloves in the clover, Love.";
+2   @list=/love/gi;
+3   print "@list.\n";
+
+
+*******Special Scalars for Saving Patterns
+The $ & special scalar is assigned the string that was matched in the last successful search. &` saves what was found preceding the pattern that was matched, and &' saves what was found after the pattern that was matched.
+$&存最后匹配上的内容，&` 存之前的，&'存之后的
+
+
+*******The x Modifier The Expressive Modifier
+The x modifier allows you to place comments within the regular expression and add whitespace characters (spaces, tabs, newlines) for clarity without having those characters interpreted as part of the regular expression; in other words, you can express your intentions within the regular expression.
+
+$_= "We are the hope of the world";
+print "Result is $&.\n" if /the    #looking for the patterns
+/x;
+这里的空格，注释都不影响结果
+
+
+***********8.3.2. The s Operator and Substitution
+The s operator is used for substitutions.
+
+s/old/new/;
+s/old/new/i;
+s/old/new/g;
+s+old+new+g;
+s(old)/new/;   s[old]{new};
+s/old/expression to be evaluated/e;
+s/old/new/ige;
+s/old/new/x;
+
+Substitution Modifiers
+Modifier	Meaning
+e		Evaluate the replacement side as an expression.
+i		Turn off case sensitivity.
+m		Treat a string as multiple lines.[a]
+o		Compile pattern only once. Used to optimize the search.
+s		Treat string as single line when newline is embedded.
+x		Allow whitespace and comments within the regular expression.
+g		Replace globally; i.e., find all occurrences.
+
+
+The e Modifier Evaluating an Expression
+ while(<DATA>){
+2       s/6/6 * 7.3/eg;       # Substitute 6 with product of 6 * 7.3
+3       print; # 结果会是用6 * 7.3的结果代替6
+
+#又一个栗子
+s[knock]{"knock, " x 2 . "knocking"}ie;
+#s/knock/"knock, " x 2 . "knocking"/ie;
+print "He is $_\n";
+（output)
+He is knock, knock, knocking at heaven's door.
+
+
+**********
+8.3.3. Pattern Binding Operators	
+
+Table 8.3. Pattern Matching Operators
+Example				Meaning
+$name =~ /John/			True if $name contains pattern. Returns 1 for true, null for false.
+$name !~ /John/			True if $name does not contain pattern.
+$name =~ s/John/Sam/		Replace first occurrence of John with Sam.
+$name =~ s/John/Sam/g	Replace all occurrences of John with Sam.
+$name =~ tr/a-z/A-Z/		Translate all lowercase letters to uppercase.
+$name =~ /$pal/			A variable can be used in the search string.
+
+
+#yige lixi:
+
+$name="either IELTS or BEC is my tagert";
+print $name ,"\n" if $name =~ tr/a-z/A-Z/;
+
+(Output)
+EITHER IELTS OR BEC IS MY TAGERT
+
+# another good lixi:
+
+1   while(<DATA>){
+2       @line = split(":", $_);
+3       print $line[0],"\n" if $line[1] =~ /408-/
+                              # Using the pattern matching operator
+    }
+4   __DATA__.  #注意这里两个下滑线之间没空格
+    Igor Chevsky:408-567-4444:3456 Mary Way
+
+(Output)
+Igor Chevsky
+
+上面栗子也可以这样：
+      ($name, $phone, $address) = split(":", $_);
+3           print $name if $phone =~ /408-/
+
+
+
+**************************
+*************************
+
+Chapter 9 正则疯狂匹配
+
+************************
+*************************
+
+Regular expression metacharacters are characters that do not represent themselves. They are endowed with special powers to allow you to control the search pattern in some way (e.g., find the pattern only at the beginning of line or at the end of the line or only if it starts with an upper- or lowercase letter). Metacharacters lose their special meaning if preceded with a backslash (\). For example, the dot metacharacter represents any single character but when preceded with a backslash is just a dot or period.
+
+
+
+
+Metacharacter	What It Matches
+######Character Class: Single Characters and Digits
+
+.			Matches any character except a newline
+[a-z0-9]		Matches any single character in set
+[^a-z0-9]		Matches any single character not in set
+\d			Matches one digit
+\D			Matches a nondigit, same as [^0-9]
+\w			Matches an alphanumeric (word) character
+\W			Matches a nonalphanumeric (nonword) character
+
+
+#######Character Class: Whitespace Characters
+\s			Matches a whitespace character, such as spaces, tabs, and newlines
+\S			Matches nonwhitespace character
+\n			Matches a newline
+\r			Matches a return
+\t			Matches a tab
+\f			Matches a form feed
+\b			Matches a backspace
+\0			Matches a null character
+
+
+
+######Character Class: Anchored Characters
+\b			Matches a word boundary (when not inside [ ])
+\B			Matches a nonword boundary
+^			Matches to beginning of line
+$			Matches to end of line
+\A			Matches the beginning of the string only
+\Z			Matches the end of the string or line
+\z			Matches the end of string only
+\G			Matches where previous m//g left off
+
+
+########Character Class: Repeated Characters
+x?			Matches 0 or 1 x
+x*			Matches 0 or more occurrences of x
+x+			Matches 1 or more occurrences of x
+(xyz)+		Matches 1 or more patterns of xyz
+x{m,n}		Matches at least m occurrences of x and no more than n occurrences of x
+
+
+########Character Class: Alternative Characters
+was|were|will	Matches one of was, were, or will
+
+
+########Character Class: Remembered Characters
+(string)		Used for backreferencing (see Examples 9.38 and 9.39)
+\1 or $1		Matches first set of parentheses[a]
+\2 or $2		Matches second set of parentheses
+\3 or $3		Matches third set of parentheses
+
+
+
+#########Character Class: Miscellaneous Characters
+\12			Matches that octal value, up to \377
+\x811			Matches that hex value
+\cX			Matches that control character; e.g., \cC is <Ctrl>-C and \cV is <Ctrl>-V
+\e			Matches the ASCII ESC character, not backslash
+\E			Marks the end of changing case with \U, \L, or \Q
+\l			Lowercase the next character only
+\L			Lowercase characters until the end of the string or until \E
+\N			Matches that named character; e.g., \N{greek:Beta}
+\p{PROPERTY}	Matches any character with the named property; e.g., \p{IsAlpha}/
+\P{PROPERTY}	Matches any character without the named property
+\Q			Quote metacharacters until \E
+\u			Titlecase next character only
+\U			Uppercase until \E
+\x{NUMBER}		Matches Unicode NUMBER given in hexadecimal
+\X			Matches Unicode "combining character sequence" string
+\[			Matches that metacharacter
+\\			Matches a backslash
+
+
+
+#####The Dot Metacharacter
+The dot (.) metacharacter matches any single character with the exception of the newline character. 不能匹配换行
+
+$_="Sing a song of sixpence\nA pocket full of rye.\n";
+# print if /pence.A/s ;
+
+print $& if /pence.A/s ;
+print "\n";
+print if s/sixpence.A/twopence, a/s;   # 前一个s是替换模式开关，后一个是令dot识别换行开关
+
+(Output)
+pence
+A
+Sing a song of twopence, a pocket full of rye.
+
+
+
+
+
+
+
+
