@@ -304,7 +304,7 @@ splice(ARRAY, OFFSET, LENGTH, LIST)
 splice(ARRAY, OFFSET, LENGTH)
 splice(ARRAY, OFFSET)
 
-OFFEST是开始位置（就是从第几个数组元素开始），length 是要替换的长度（其实是数组元素的个数），LIST是The LIST consists of new elements that are to replace the old ones，其实就是把原数组里移除了的数据用这个list里的元素补充上。 见下面第二个栗子
+OFFEST是开始位置（就是从第几个数组元素开始)，length 是要替换的长度（其实是数组元素的个数），LIST是The LIST consists of new elements that are to replace the old ones，其实就是把原数组里移除了的数据用这个list里的元素补充上。 见下面第二个栗子
 
 #####
 @discarded = splice(@colors, 2, 2);
@@ -1031,9 +1031,321 @@ A
 Sing a song of twopence, a pocket full of rye.
 
 
+########The s Modifier: The Dot Metacharacter and the Newline
+The s modifier treats the line with embedded newlines as a single line, rather than a group of multiple lines, and allows the dot metacharacter to treat the newline character the same as any other character it might match. The s modifier can be used with both the m (match) and the s (substitution) operators.
+ s 可以把换行\n也当作一个字符来处理，这样，dot(.)就可以匹配换行了。 可以和 m 匹配和s替换结合着来使用。
+注意，这个转意s在后，替换s在前。见4.
+
+1   $_="Sing a song of sixpence\nA pocket full of rye.\n";
+2   print $& if /pence./s;
+3   print $& if /rye\../s;
+4   print if s/sixpence.A/twopence, a/s;
+
+(Output)
+2   pence
+3   rye.
+4   Sing a song of twopence, a pocket full of rye.
+
+
+#########Metacharacters that Turn off Greediness
+By placing a question mark after a greedy quantifier, the greed is turned off, and the search ends after the first match 
+rather than the last one.
+在匹配模式后加一个？　就可以关闭贪婪模式，
+
+1   $_="abcdefghijklmnopqrstuvwxyz";
+2   s/[a-z]+/XXX/;
+3   print $_, "\n";
+
+4   $_="abcdefghijklmnopqrstuvwxyz";
+5   s/[a-z]+?/XXX/;
+6   print $_, "\n";
+
+(Output)
+3   XXX
+6   XXXbcdefghijklmnopqrstuvwxyz
+
+########Turning Off Greediness
+
+x??		Matches 0 or 1 occurrences of x
+(xyz)??		Matches 0 or 1 occurrences of pattern xyz
+x*?		Matches 0 or more occurrences of x
+(xyz)*?		Matches 0 or more occurrences of pattern xyz
+x+?		Matches 1 or more occurrences of x
+(xyz)+?		Matches 1 or more occurrences of pattern xyz
+x{m,n}?		Matches at least m occurrences of x and no more than n occurrences of x
+x{m}?		Matches at least m occurrences of x
+x{m,}?		Matches at least m times
+
+
+##########Table 9.7. Anchors (Assertions)
+
+^	Matches to beginning of line or beginning of string
+$	Matches to end of line or end of a string
+\A	Matches the beginning of the string only
+\Z	Matches the end of the string or line
+\z	Matches the end of string only
+\G	Matches where previous m//g left off
+\b	Matches a word boundary (when not inside [ ])
+\B	Matches a nonword boundary
+
+
+1   while(<DATA>){
+2       print if /\bJon/;
+    }
+    _ _DATA_ _
+    Steve Blenheim 1.10
+    Betty Boop .5
+    Igor Chevsky 555.100
+    Norma Cord 4.01
+    Jonathan DeLoach .501
+    Karen Evich 601
+
+(Output)
+Jonathan DeLoach .501
+******The expression reads: Find a word beginning with the pattern Jon
+
+所以下面这个没有输出：Find a word beginning and ending with Jon. Nothing is found.
+1   while(<DATA>){
+2       print if /\bJon\b/;
+    }
+
+
+########The m Modifier
+用了m,可以把^ $ 这两个首位匹配 覆盖到换行\n, 否则，遇到换行，首位匹配就都不继续向下识别了，不过　m 对　/A和/z都是不起作用的！只对$^管用
+A string containing newlines will be treated as multiple lines. If the regular expression is anchored with the ^ metacharacter,
+ and that pattern is found at the beginning of any one of the multiple lines, the match is successful.
+
+perl -e ' $_="Today is history.\nTomorrow will never be here.\n";print if /^Tomorrow/;'
+----没结果
+perl -e ' $_="Today is history.\nTomorrow will never be here.\n";print if /^Tomorrow/m;'
+Today is history.
+Tomorrow will never be here.
+可以匹配出来
+
+
+#########Alternation
+
+print if /Steve|Betty|Jon/;
+
+
+##########Grouping or Clustering（）
+If the regular expression pattern is enclosed in parentheses, a subpattern is created
+扩在括号里，就成为一个集群，可以最当做一个小单独个体来对待。 　（）
+
+1   $_=qq/The baby says, "Mama, Mama, I can say Papa!"\n/;
+2   print if s/(ma|pa)+/goo/gi;
+
+(Output)
+The baby says, "goo, goo, I can say goo!"
+******:The expression reads: Find one or more occurrences of the pattern ma or pa and replace that with goo.
+
+
+1   while(<DATA>){
+2       print if /\s(12){3}$/;  # Print lines matching exactly 3
+                                # consecutive occurrences of 12 at
+                                # the end of the line
+    }
+    _ _DATA_ _
+    Steve Blenheim  121212
+    Betty Boop      123
+    Igor Chevsky    123444123
+    Norma Cord      51235
+    Jonathan DeLoach123456
+    Karen Evich     121212456
+
+(Output)
+Steve Blenheim 121212
+
+
+2       # print if /^Steve|Boop/;It would print any line that begins with Steve and any line containing the pattern Boop.
+                                 / 会打印出以Steve开头的行，以及包含　Boop的行，头标并不会作用到 Boop的。
+3         print if /^(Steve|Boop)/; /这个才会把都是两个开头的行打出来。
 
 
 
+#######Remembering or Capturing
+把一个模式括在括号里，除了可以当作一个小独立个体外，另一个用途是，它们都被编号存在内存里了。想取出来用十分方便。
+If the regular expression pattern is enclosed in parentheses, a subpattern is created. 
+The subpattern is saved in special numbered scalar variables, starting with $1, then $2, and so on.
 
 
+s/([Jj]on)/$1lathan/; /把　Jon或jon 替换为　Jonlathan or Jonathan 了。 
+
+---
+print if s/(Steve) (Fraze)/$2,$1/.  /把Steve Fraze替换为Fraze,Steve
+
+
+1   while(<DATA>){
+2       s/([A-Z][a-z]+)\s([A-Z][a-z]+)/$2, $1/;
+                                       # Reverse first and last names
+3       print;
+    }
+    _ _DATA_ _
+    Steve Blenheim
+    Betty Boop
+    Igor Chevsky
+    Norma Cord
+    Jon DeLoach
+    Karen Evich
+
+  # 这段会把一行的名和姓点颠倒输出。 不过在第五个会遇到麻烦。输出是De Jon. 解决方法：  s/([A-Z][a-z]+)\s([A-Z][A-Za-z]+)/$2, $1/;
+
+# The following works the same:
+   s/(\w+)\s(\w+)/$2,$1/;
+
+#and:
+2       ($first, $last)=/(\w+) (\w+)/;   # Could be: (\S+) (\S+)/
+3       print "$last, $first\n";
+
+
+#
+
+1   $string="ABCdefghiCxyzwerC YOU!";
+2   $string=~s/.*C/HEY/;
+3   print "$string", "\n";
+#/.*C/, reads: Find the largest pattern that contains any number of characters ending in C. This search is greedy.
+ It will search from left to right until it reaches the last C. 
+
+(Output)
+HEY YOU!
+
+# a good example of ? Turn off greedy modes
+1   $fruit="apples pears peaches plums";
+2   $fruit =~ /(.*)\s(.*)\s(.*)/;
+3   print "$1\n";
+4   print "$2\n";
+5   print "$3\n";
+    print "-" x 30, "\n";
+6   $fruit="apples pears peaches plums";
+7   $fruit =~ /(.*?)\s(.*?)\s(.*?)\s/; # Turn off greedy quantifier
+8   print "$1\n";
+9   print "$2\n";
+10  print "$3\n";
+
+(Output)
+3   apples pears
+4   peaches
+5   plums
+    ------------------------------
+8   apples
+9   pears
+10  peaches
+
+The string is divided into three remembered substrings, each substring enclosed within parentheses. The .* metacharacter sequence reads zero or more of any character. The * always matches for the largest possible pattern. The largest possible pattern would be the whole string. However, there are two whitespaces outside of the parentheses that must also be matched in the string. What is the largest possible pattern that can be saved in $1 and still leave two spaces in the string? The answer is apples pears.
+第一个匹配，.*会匹配最大可能。括号把他们分成三部分，留下剩下两部分，第一个就会存下apples pears.
+This time, a question mark follows the greedy quantifier (*). This means that the pattern saved will be the minimal, rather than the maximal, number of characters found. apples will be the minimal numbers of characters stored in $1, pears the minimal number in $2, and peaches the minimal number of characters in $3. The \s is required or the minimal amount of characters would be zero, since the * means zero or more of the preceding character.
+第二个匹配，?关闭了贪婪模式，所以.* 会匹配最小的符合条件。那就是只有apples. 最后要加一个\s  否则，最小的匹配会是空，而不会是peaches.
+
+
+########turn off capturing  关闭分组存储
+如果只想用括号来分组，并不打算存在$1 $2等里，那么可以用　？：来关闭存储的方式。只保留分组的功能
+When the only purpose is to use the parentheses for grouping, and you are not interested in saving the subpatterns in $1, $2, or $3, the special ?: metacharacter can be used to suppress the capturing of the subpattern.
+
+#:
+$_="Tom Savage and Dan Savage are brothers.\n";
+print if /(?:T[a-z]*)/;
+print "$1\n";
+
+OUTPUT:
+Tom Savage and Dan Savage are brothers.
+Use of uninitialized value $1 in concatenation (.) or string at ./9_2_re.pl line 66.
+
+
+################Metacharacters that Look Ahead and Behind
+
+/PATTERN(?=pattern)/	Positive look ahead
+/PATTERN(?!pattern)/	Negative look ahead
+(?<=pattern)/PATTERN/	Positive look behind
+(?<!pattern)/PATTERN/	Negative look behind
+
+
+#
+$string="I love chocolate cake and chocolate ice cream.";
+$string =~ s/chocolate(?= ice)/vanilla/;
+print "$string \n";
+
+OUTPUT
+I love chocolate cake and vanilla ice cream. （注意只有chocolate被替换，后面的ice只是做为查找限定的条件，并不会被替换！！！！！！！！！）
+
+# a negative ahead :
+print if/^\w+\s(?![BC])/;    一个词，一个空格，然后不能是 B或C开头的。
+
+# A positive look behind
+
+1   $string="I love chocolate cake, chocolate milk,
+             and chocolate ice cream.";
+2   $string =~ s/(?<= chocolate) milk/ candy bars/;
+OUTPUT：
+ I love chocolate cake, chocolate candy bars, and chocolate ice cream.
+如果milk	前是 chocolate，milk，注意是milk，而不是chocolate milk 将被替换为candy bars！！！！！！！！
+
+### negative look behind
+ print if /(?<!Betty) B[a-z]*/;
+
+
+
+##########
+
+9.1.4. The tr or y Function
+
+
+tr Modifiers
+Modifier	Meaning
+d		Delete characters
+c		Complement the search list
+s		Squeeze out multiple characters to single character
+
+
+
+Format
+tr/search/replacement/
+tr/search/replacement/d
+tr/search/replacement/c
+tr/search/replacement/s
+y/search/replacement/      (same as tr; uses same modifiers)
+
+
+##
+ tr/a-z/A-Z/;print;
+
+### c:
+
+  while(<DATA>){
+       tr/0-9/*/c; print;
+}
+__DATA__
+Steve Blenheim 101
+Betty Boop  202
+
+OUTPUY:
+***************101*
+************202*
+
+把所有不在串里的字符，都替换成了目标字符，也就是所有不是数字的，都替换成*了。 （多么诡异的功能！！！）
+The c (complement) option complements the search string; that is, it translates each character not listed in this string to its corresponding character in the replacement string.
+
+
+###The tr Squeeze Option
+把相同的符号压缩成只剩下一个
+while (<DATA>){
+        tr/:/:/s;
+        print;
+    {
+    _ _DATA_ _
+    1:::Steve Blenheim
+    2::Betty Boop
+    3:Igor Chevsky
+    4:Norma Cord
+    5:::::Jon DeLoach
+    6:::Karen Evich
+
+(Output)
+1:Steve Blenheim
+2:Betty Boop
+3:Igor Chevsky
+4:Norma Cord
+5:Jon DeLoach
+6:Karen Evich
+其实是替换成只有一个：。如果不用：，就会替成那个新的，比如-
+非常好用！！！！！！！
 

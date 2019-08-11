@@ -65,3 +65,165 @@ To add a new repositories :
   
 
 Git clone git@github.com:MCIN2018/resource. : This will become /users/mc/resource/resource!!!!  Be careful, to make sure the structure of your folders. 
+
+
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++
+
+
+git checkout -b perl_4_example
+
+Then create scripts at this branch, then, push this new branch to Github.
+
+git push -u origin perl_4_example 
+
+
+=======================
+
+1: Guthub:https://github.com
+
+ MCIN2018 : GitHub name 
+ myl2012@hotmail.com/T12…..a
+
+1.1. Create Github account and first repository hello-world
+
+Under your account , find .ssh folder. ( on your computer. Not on Github)
+
+To check if id_rsa and id_rsa.pub , if they don’t exist, to create them:
+
+ssh-keygen -t rsa
+
+Add public to Github:setting->adding ssh key.  ( this is on Github)
+
+
+====: to clone the remote repository hello-world. ( it is different with the below one.  The folder was not created on Github.  The below one, the folder was created on Github)
+
+ Git clone git@github.com:MCIN2018/hello-world
+
+===: create repository codes and connect it to local repository codes. 
+
+git remote add origin git@github.com:MCIN2018/codes
+   : ssh:git@github.com:MCIN2018/codes.git
+     Https:https://github.com/MCIN2018/codes.git
+
+
+
+=======
+To add a new repositories : ( this is not a good example.  The folder on Github shouldn't be created manually )
+
+1;To add a repository at Github: resource ( private)
+
+2: TO Clone the remote repository resource to /users/mc/resource
+
+  
+
+Git clone git@github.com:MCIN2018/resource. : This will become /users/mc/resource/resource!!!!  Be careful, to make sure the structure of your folders. 
+
+
+ After this operation, go to 3:
+
+3: ( this doesn't need since the resource repository has been created on Gitghu)
+
+
+git remote add origin git@github.com:MCIN2018/resource
+
++++ output: 
+MCdeMacBook-Pro:resource mc$ pwd
+/users/mc/resource/resource
+MCdeMacBook-Pro:resource mc$ git remote add origin git@github.com:MCIN2018/resource
+fatal: remote origin already exists.
+
+4: 
+MCdeMacBook-Pro:resource mc$ git push -u origin master
+
+Warning: Permanently added the RSA host key for IP address '192.30.253.112' to the list of known hosts.
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+Everything up-to-date
+
+
+
+5:
+  559  git diff
+  561  git add .
+  563  git status .
+  564  git commit -m "20190228_test1"
+  565  git status
+  566  git push origin master
+  568  git status .
+
+
+
+
+
+============ files all lost, to recovery.
+
+MCdeMacBook-Pro:codes mc$ git status 
+On branch perl_4_example
+Your branch is up to date with 'origin/perl_4_example'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	deleted:    perl/10_file.pl
+	deleted:    perl/11_exercise_1.pl
+	deleted:    perl/11_exercise_2.pl
+	deleted:    perl/11_exercise_3.pl
+	deleted:    perl/11_sub.pl
+	deleted:    perl/12_exercise.pl
+	deleted:    perl/13_reference.pl
+	deleted:    perl/5_exercise_2.pl
+	deleted:    perl/5_exercise_3.pl
+	deleted:    perl/5_exercise_4.pl
+	deleted:    perl/5_exercise_5.pl
+	deleted:    perl/5_other_hash.pl
+	deleted:    perl/5_what_is_in_a_name.pl
+	deleted:    perl/6_whereisoperator.pl
+	deleted:    perl/7_if_only.pl
+	deleted:    perl/8_exercise.pl
+	deleted:    perl/8_re.pl
+	deleted:    perl/9_2_re.pl
+	deleted:    perl/9_3_re.pl
+	deleted:    perl/9_exercise.pl
+	deleted:    perl/9_re.pl
+	deleted:    perl/generate_xml.pl
+	deleted:    perl/suse.sh
+	deleted:    perl/test_result.txt
+	deleted:    shell/Script.sh
+	deleted:    shell/create_xml.sh
+	deleted:    shell/exercise_1.sh
+	deleted:    shell/exercise_2.sh
+	deleted:    shell/exercise_3.sh
+	modified:   shell/out
+	modified:   shell/out.cooy
+	deleted:    shell/out.xml
+	deleted:    shell/result.txt
+	deleted:    shell/test_result.txt
+	deleted:    shell/test_result.xml
+	deleted:    shell/ts_xml.sh
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	.DS_Store
+	perl/.DS_Store
+	perl/12_register
+	perl/failed
+	shell/.DS_Store
+	shell/file
+	shell/interview_scripts/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+
+: git checkout -- perl/10_file.pl
+MCdeMacBook-Pro:codes mc$ ls -l perl/10_file.pl
+-rwxr-xr-x  1 mc  staff  1028 Feb 28 18:54 perl/10_file.pl
+
+: then , the first file is recovered 
+
+
