@@ -1,0 +1,21 @@
+
+##### To save an array as a string
+把数组转存为字符串
+
+When an array or an array slice is interpolated into a double-quoted string or a similar context such as /.../ ,
+ its elements are separated by this value. Default is a space. For example, this
+print "The array is: @array\n";
+
+is equivalent to this: 用join函数也可：
+
+print "The array is: " . join(“ ”, @array) . "\n";
+
+我使用的例子：
+$string_9_e=join("\n",@array_9_e);
+
+
+##### to run UNIX command in perl script 在perl里运行unix命令
+
+1: system ("sed -n '2,6p' data_9e");
+
+2: $var=`wc -l`; # this will save the return in the variable

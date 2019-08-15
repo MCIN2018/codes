@@ -1209,7 +1209,7 @@ print if s/(Steve) (Fraze)/$2,$1/.  /把Steve Fraze替换为Fraze,Steve
 (Output)
 HEY YOU!
 
-# a good example of ? Turn off greedy modes
+######## a good example of ? Turn off greedy modes
 1   $fruit="apples pears peaches plums";
 2   $fruit =~ /(.*)\s(.*)\s(.*)/;
 3   print "$1\n";
