@@ -1,0 +1,123 @@
+Shell Note:
+
+
+########### 回车换行
+符号 		ASCII 	意义
+\r（return)	13	回车（CR　Carriage Return)
+\n (newline)	10	换行（LF  Line Feed）
+
+Note:文件结束符EOF和\r\n根本没有关系
+1.windows下文件：
+     在文件结束前，windows自带的编辑器会自动添加\r\n
+2.linux下文件：
+     在文件结束前，linux自带的编辑器会自动添加\n
+3:Unix 下是\n Mac 下是\r
+
+
+
+##########################################
+###### sed , show the line numbers sed 显示行号
+##########################################
+
+ Sed 中，=可以显示行号：
+
+ sed -n '/Lori/=;/Lori/p' data_9_e
+ sed -n '/Lori/{=;p;}' data_9_e   # BETTER
+可是输出会有换行：
+16
+Lori Gortz:327-832-5728:3465 Mirlo Street, Peabody, MA
+
+需要去掉
+
+sed 'N;s/\n/:/' 
+
+sed -n '2,6{=;p;}' data_9e|sed 'N;s/\n/:/' 
+
+In perl:
+system ( " sed -n '2,6{=;p;}' data_9e|sed 'N;s/\\n/:/' ");
+需要\\n 否则会被解读为换行
+
+##### sed 删除换行符
+
+sed ':label;N;s/\n/:/;b label' filename
+sed ':label;N;s/\n/:/;t label' filename
+ 
+上面的两条命令可以实现将文件中的所有换行符替换为指定的字串，如命令中的冒号。命令的解释：
+:label;  这是一个标签，用来实现跳转处理，名字可以随便取(label),后面的b label就是跳转指令
+N;  N是sed的一个处理命令，追加文本流中的下一行到模式空间进行合并处理，因此是换行符可见
+s/\n/:/;   s是sed的替换命令，将换行符替换为冒号
+b label  或者 t label    b / t 是sed的跳转命令，跳转到指定的标签处
+标签跳转和N的追加命令实现了每一行的不间断放入模式处理空间，从而不会漏掉每一个换行符，而没有标签的话跳转的话，就只能每两行替换掉>一个换行符，对比效果：
+echo "a,b,c,d" |sed 's/,/\n/g'|sed ':x;N;s/\n/,/;b x'
+echo "a,b,c,d" |sed 's/,/\n/g'|sed 'N;s/\n/,/'
+
+ 
+
+
+##########################################
+####### find 命令
+##########################################
+ 
+大于15M　的删掉 ，28天以前修改过的。
+find . -type f -size +15M -mtime +28 -exec rm {} \;
+
+
+
+
+
+##########################################
+############## du 命令： 显示磁盘用量。档案或目录的磁盘使用空间
+##########################################
+
+du -- display disk usage statistics
+
+du -k   in 1024-byte (1-Kbyte) blocks. 占了多少k 
+du -g   in 1073741824-byte (1-Gbyte) blocks. 占了多少g
+du -a : 显示目录，以及下面的文件的占用空间。
+   -c : 最后加上总计占用空间
+   -s : 只显示总和。就和-c最后显示出的一样，不过-c会先把每个文件的大小都列出，然后在给出总和
+
+du -h :   用人类方式显示出来（human-readable）
+
+6.1M	./Thought for the Day
+ 53M	./The English We Speak
+  0B	./Arts & Ideas
+ 67M	./6 Minute Grammar
+428M	./More or Less_ Behind the Stats
+ 79M	./In Touch
+3.3G	./Global News Podcast
+ 14M	./The Documentary Podcast
+  0B	./Arts and Ideas
+ 53M	./6 Minute Vocabulary
+287M	./Learning English News Review
+ 78M	./6 Minute English
+ 55M	./Seriously.._
+ 19M	./Outlook
+4.4G	.
+
+
+du -hs
+4.4G	.
+
+
+
+##########################################
+######## df 命令：  display free disk space:显示目前所有档案系统的最大可用空间及使用情形
+##########################################
+
+df -k 用k表示 Use 1024-byte (1-Kbyte) block
+df -m 用M来表示。Use 1048576-byte (1-Mbyte) blocks
+   -g  用G表示：Use 1073741824-byte (1-Gbyte) blocks rather than the default
+-b      Use (the default) 512-byte blocks
+
+
+ df -hi
+Filesystem      Size   Used  Avail Capacity iused               ifree %iused  Mounted on
+/dev/disk1s1   466Gi  123Gi  341Gi    27% 1086200 9223372036853689607    0%   /
+devfs          189Ki  189Ki    0Bi   100%     652                   0  100%   /dev
+/dev/disk1s4   466Gi  1.0Gi  341Gi     1%       1 9223372036854775806    0%   /private/var/vm
+map -hosts       0Bi    0Bi    0Bi   100%       0                   0  100%   /net
+map auto_home    0Bi    0Bi    0Bi   100%       0                   0  100%   /home
+
+第一个字段及最后一个字段分别是档案系统及其挂入点
+

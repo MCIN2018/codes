@@ -1350,3 +1350,299 @@ while (<DATA>){
 非常好用！！！！！！！
 
 The end of Chapter 9
+
+
+
+###################################
+#######  Chapter 10.   ###########
+##################################
+
+
+
+### 10.1.2 Open for reading
+1   open(FILEHANDLE, "FILENAME");
+2   open(FILEHANDLE, "<FILENAME");
+2   open(FILEHANDLE);
+3   open FILEHANDLE;
+
+#### Closing the filehandle
+close (FILEHANDLE);
+close FILEHANDLE;
+
+If you don't explicitly close the file, when you reopen it this way, the line counter variable, $., will not be reset. 
+Closing a pipe causes the process to wait until the pipe is complete and reports the status in the $! variable
+不及时关闭句柄问题多多哦
+
+####### die function 
+
+the die function is used if a call to the open function fails. If Perl cannot open the file, the die function is used 
+to exit the Perl script and print a message to STDERR, usually the screen.
+如果打开文件失败，die函数会推出perl程序，并将出错信息写入　STDERR
+
+a special variable $! to hold the value of the system error that occurs when you are unable to successfully open a file 
+or execute a system utility.
+$!会用来存储出错的信息
+
+open (FILE1,"hellohaha") || die " I cannot open the file ." ;
+OUTPUT: I cannot open the file . at ./10_file.pl line 72, <DB> line 6.
+
+open (FILE1,"hellohaha") || die " I cannot open the file .\n" ;
+OUTPUT: I cannot open the file .
+
+open (FILE1,"hellohaha") || die " I cannot open the file . $!\n" ;
+OUTPUT: I cannot open the file . No such file or directory
+
+Note: The \n suppresses any further output from the die function. All of die's output is sent to STDERR 
+after the program exits.
+Omitting the \n causes the die function to append a string to the output, indicating the line number 
+in the script where the system error occurred.
+
+
+\n会只把die的内容显示，并存到STDERR句柄。如果不加，会把错误发生的具体位置也展示出来
+而$!里，存着具体的出错原因。他们会一起被写入　STDERR
+
+
+
+#########Reading from the Filehandle
+
+1   open(FILE, "datebook") || die "Can't open datebook: $!\n";
+2   while(<FILE>) {
+3       print if /Sir Lancelot/;
+4   }
+5   close(FILE);
+
+--
+while($line = <FILE>) 
+---
+@lines = <FILE>;
+
+--	
+
+#########Open for writing 
+
+Format
+1   open(FILEHANDLE, ">FILENAME)";
+
+1.  $file="/home/jody/ellie/perl/newfile"; 
+2   open(HANDOUT, ">$file") || die "Can't open newfile: $!\n";
+3   print HANDOUT "hello world.\n";
+4   print HANDOUT "hello world again.\n";
+
+###########Open for appending 
+open(FILEHANDLE, ">> FILENAME");
+
+########### select ： 改变当前句柄的函数，很好用的函数！！！
+
+用select 函数，把当前句柄设置为默认句柄，所有输入输出都会操作在这个句柄对应的文件中。它的返回值为前一个句柄。
+
+改变当前句柄，就表示，可以把要操作的输出的内容，打印到另一个文件里，只要把另一个文件的句柄设置为当前句柄。
+
+
+open (FILEOUT,">newfile")  || die "Can't open newfile: $!\n"; 
+select(FILEOUT);# 以前的默认句柄是STDOUT，现在变成了　FILEOUT
+
+如果这样写 $oldfile=select(FILEOUT）, 那么，当前句柄仍被改为　FILEOUT，　但$filefile里存的变量是前一个句柄，也就是STDOUT，即屏幕。
+
+
+(The Script)
+    #! /usr/bin/perl
+1   open (FILEOUT,">newfile")  || die "Can't open newfile: $!\n";
+2   select(FILEOUT);      # Select the new filehandle for output
+3   open (DB, "<datebook") || die "Can't open datebook: $!\n";
+    while(<DB>) {
+4      print ;            # Output goes to FILEOUT, i.e., newfile 文件内容会被打入进当前的句柄　FILEOUT。
+    }
+5   select(STDOUT);       # Send output back to the screen #再把当前句柄设置回来，到屏幕。
+    print "Good-bye.\n";  # Output goes to the screen
+
+# 
+
+
+
+#########File Locking with flock：文件锁操作。
+To prevent two programs from writing to a file at the same time, you can lock the file so you have exclusive access to it and then unlock it when you're finished using it. The flock function takes two arguments: a filehandle and a file locking operation
+把正在操作的文件加保护锁，防止在自己写操作的时候，也有别人操作它而引起混乱
+
+ File Locking Operations
+Name	Operation	What It Does
+lock_sh	1	Creates a shared lock
+lock_ex	2	Creates an exclusive lock
+lock_nb	4	Creates a nonblocking lock
+lock_un	8	Unlocks an existing lock
+
+
+
+1   $LOCK_EX = 2;
+2   $LOCK_UN = 8;
+
+3   print "Adding an entry to the datafile.\n";
+    print "Enter the name: ";
+    chomp($name=<STDIN>);
+    print "Enter the address: ";
+    chomp($address=<STDIN>);
+
+4   open(DB, ">>datafile") || die "Can't open: $!\n";
+
+5   flock(DB, $LOCK_EX) || die ;        # Lock the file
+
+6   print DB "$name:$address\n";
+
+7   flock(DB, $LOCK_UN) || die;         # Unlock the file
+
+
+
+#############The seek and tell Functions 
+seek是个好函数。
+
+the seek function allows you to move to some byte (not line) position within the file. The seek function returns 1 if successful, 0 otherwise
+
+可以在随意的位置开始文件操作。position： 0 代表文件开头，2代表结尾，1代表当前位置
+offset是从position开始的文件的（偏移）位置。可前可后，前为正，后为负
+
+seek(FILEHANDLE, BYTEOFFSET, FILEPOSITION);
+
+The seek function sets a position in a file, where the first byte is 0. Positions are
+
+0 = Beginning of the file
+
+1 = Current position in the file
+
+2 = End of the file
+
+
+用od命令可以显示文件是怎么存储的，unix里回车换行等用\n 
+
+例子：
+open (DB,"<datafile") or die "Cannot open the file: $! \n";
+
+while ( $line=<DB>)
+{
+    if ($line =~ /Lori/)
+    {
+        print "---$line---\n";
+    }
+} 
+
+seek(DB,0,0); #如果这里不用seek， 那么想进行下面的操作，必须先把文件关了，再打开。 用了seek， 可以定位到指定位置，对这个例子，回到文件开头，从第一个字符开始。
+
+while (<DB>)
+{
+    print if /Tommy/;
+} 
+
+
+----
+seek(FH,0,1) or die; 当前位置	
+
+----
+1   open(FH, "db") or die "Can't open datebook: $!\n";
+2   seek(FH,-13,2) or die;
+3   while(<FH>){
+4       print;
+    }
+
+(Output)
+4   Karen Evich
+从文件末尾开始，向前数13位，恰好是　Karen Evich
+用od -c 命令 可以看处文件的存储。 Od -c db 
+
+
+------
+用　tell　命令，可以返回文件的当前字符位置，供seek函数使用。
+The tell function returns the current byte position in the file and is used with the seek function to move to that 
+position in the file. If FILEHANDLE is omitted, tell returns the position of the file last read.
+
+tell(FILEHANDLE);
+tell;
+
+1   open(FH,"db") || die "Can't open: $!\n";
+2   while ($line=<FH>) {      # Loop through the whole file
+       chomp($line);
+3      if ($line =~ /^Lori/) {
+4          $currentpos=tell;  # 这个位置恰好是之前的匹配完成，下一个字符开始的位置。
+5          print "The current byte position is $currentpos.\n";
+6          print "$line\n\n";
+       }
+    }
+7   seek(FH,$currentpos,0);   # Start at the beginning of the file
+# 用新的到的位置做偏移量，从开头开始来过。 
+8   @lines=(<FH>);
+9   print @lines;
+
+用　od -c db ，可以看出，这个位置恰好是匹配完LORI 的那一行后的下一行。 注意这里只能用tell得到的位置做偏移量。因为seek只有三个选项做位置：0，1，2
+分别代表开头，当前位置和结尾。
+
+
+
+
+######### Open for Reading and Writing 
+　打开文件来读写
+Reading and Writing Operations
+Symbol		Open For
++<		Read first, then write
+ 	 "+<" 是先读后写，如果要在已有的文件中，添加数据但不是在文件末尾即在文件开始或中间添加数据，先用seek（）函数定位到要添加数据的位置，
+	 然后开始在文件中写入数据
++>		Write first, then read
+  	 "+>" 是先写后读，如果文件存在，先把文件的内容删除，再写入数据，然后再读。操作结果：文件中以前的数据被删除，现在文件中只保留目前写入的数据
++>>		Append first, then read
+
+
+一个例子：
+open(FH, "+>file") || die;
+print FH "This line is written to file.\n";
+seek(FH,0,0);         # Go to the beginning of the file
+ while(<FH>) {
+        print;            # Reads from file; the line is in $_
+}
+
+ file里的文件都被清空，最后只剩下新写入的这行：This line is written to file.
+
+
+###########Open for Pipes
+open a filter so that the output is piped to a system command. The command is preceded by a pipe symbol (|) and replaces the filename argument in the previous examples. The output will be piped to the command and sent to STDOUT.
+打开的文件内容作为管道命令后的参数，输出默认是屏幕　STDOUT
+
+open(FILEHANDLE,|COMMAND);
+
+
+一个例子：
+ open(MYPIPE, "| wc -w");
+print MYPIPE "apples pears peaches";
+ close(MYPIPE);
+ 这个句柄不需要有一个文件存在。，写入它的内容，会当作参数，管道给后面的一个系统命令。所以，这个输出的结果是3 
+
+又一个例子：
+1   open(FOO, "| tr '[a-z]' '[A-Z]'");
+2   print FOO "hello there\n";
+3   close FOO;   # If you don't close FOO, the output may be delayed
+
+(Output)
+2   HELLO THERE
+
+
+
+再来一个好例子，把文件里的内容全部转换大小写：
+$ cat emp.names
+1 Steve Blenheim
+2 Betty Boop
+3 Igor Chevsky
+4 Norma Cord
+5 Jon DeLoach
+6 Karen Evich
+
+(The Script)
+    #!/usr/bin/perl
+1   open(FOO, "| sort  +1| tr '[a-z]' '[A-Z]'"); # Open output filter
+2   open(DB, "emp.names");       # Open DB for reading
+3   while(<DB>)
+   { print FOO ; }
+4   close FOO;
+
+
+#########Sending the Output of a Filter to a File	
+想把管道输出定向到文件里，而不是像上面一样屏幕输出。那就把STDOUT重定向到一个句柄吧。
+
+open(STDOUT, ">/dev/tty");
+
+
+	

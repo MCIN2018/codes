@@ -19,3 +19,8 @@ $string_9_e=join("\n",@array_9_e);
 1: system ("sed -n '2,6p' data_9e");
 
 2: $var=`wc -l`; # this will save the return in the variable
+
+
+
+###### How to print STDERR 
+如何打出错误句柄内容？
