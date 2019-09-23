@@ -1509,6 +1509,7 @@ The seek function sets a position in a file, where the first byte is 0. Position
 
 2 = End of the file
 
+BYTEOFFSET是偏移量。可正可负。 seek(FH,-13,2)： 从末尾，向回13个字符的位置。
 
 用od命令可以显示文件是怎么存储的，unix里回车换行等用\n 
 
@@ -1639,10 +1640,131 @@ $ cat emp.names
 4   close FOO;
 
 
-#########Sending the Output of a Filter to a File	
+#########Sending the Output of a Filter to a File (需要再看看！！@@###）	
 想把管道输出定向到文件里，而不是像上面一样屏幕输出。那就把STDOUT重定向到一个句柄吧。
 
 open(STDOUT, ">/dev/tty");
 
 
-	
+
+####################Input Filter （ 很好用的！）
+把一个命令的输出，存储在句柄里。
+open(FILEHANDLE, COMMAND|);
+
+一个栗子
+1   open(INPIPE, "date |");    
+2   $today = <INPIPE> ";
+3   print $today;
+4   close(INPIPE);
+
+(Output)
+Thu Aug 29 09:21:47 CST 2019
+
+
+
+再一个栗子：
+
+open (OPENGREP,"find . -size +2k -mtime +20 -exec ls  {} \\;|");
+while($filegrep=<OPENGREP>)
+{
+    print $filegrep;
+}
+
+(OUTPUT)
+./7_if_only.pl
+./5_what_is_in_a_name.pl
+./6_whereisoperator.pl
+./6_exercise_1-8.pl
+
+
+
+
+
+######################10.2. Passing Arguments######################
+
+ARGV是一个句柄	
+
+ARGV[0]:	 the name of the first word after the script name 第一个参数（如果是）
+$0      :	 is used to hold the name of the Perl script.     脚本名
+$#ARGV  : 	 contains the number of the last subscript in the array.最后一个参数 
+$#ARGV + 1  	 The number of arguments.参数个数
+
+$ARGV :		contains the name of the currently selected filehandle. <ARGV>里的当前值
+
+
+一个栗子：
+die "$0 requires an argument.\n" if $#ARGV < 0 ;
+
+print "@ARGV\n";
+print "$ARGV[1]\n";
+print "$ARGV[$#ARGV] is the last argument.\n";
+
+（OUTPUT）
+MCdeMacBook-Pro:perl mc$ ./10_file.pl a1 a2 a3 a4 a5(运行行）
+a1 a2 a3 a4 a5
+a2
+a5 is the last argument.
+
+
+
+#######
+while( <ARGV> ) {print ;} 可以移动每个参数打印出来
+
+
+####### 又一个栗子
+$. 存贮现在的行数。
+
+print "-----------\n";
+if ( $#ARGV < 1 )
+{
+    die " $0: pattern filename(s).\n";
+}
+
+$pattern=shift;
+
+while ($line=<ARGV>)
+{
+    print "$ARGV: $. : $line " if $line =~ /$pattern/i;
+    close(ARGV) if eof;
+}
+
+=OUTPUT
+data: 6 : Karen Evich 601
+ db: 7 : Karen Evich
+
+###############练习题B的第三题非常好：找出12小时内修改了的文件，
+用stat 函数。利用现在时间和修改时间减，得出修改的间隔。都是是从1970年起的秒数。
+和12小时的秒数相比，查找修改时间符合要求的：
+     my $lmtimedate = (stat $myfile)[9];
+     my $now = time();
+     my $howLongAgo = $now - $lmtimedate; #Since epoch time is just a number of seconds, it's easy to calculate short distances in time. 60*60 = 1 hour * 12 = 12 hours.
+    
+    if ($howLongAgo <= (60*60*12))
+    {
+        print "$myfile was edited less than 12 hours ago.\n";
+    }
+
+PS#### stat 的值
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+        $atime,$mtime,$ctime,$blksize,$blocks)
+           = stat($filename);
+OR：
+use File::stat;
+my $mtime = stat($filename)->mtime;
+
+
+
+
+
+####################################################################
+##################   Chapter 11 Subroutines.   #####################
+####################################################################
+
+
+
+
+
+
+
+
+

@@ -24,3 +24,16 @@ $string_9_e=join("\n",@array_9_e);
 
 ###### How to print STDERR 
 如何打出错误句柄内容？
+
+#######  遍历数组方法
+
+#### stat 的值
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+        $atime,$mtime,$ctime,$blksize,$blocks)
+           = stat($filename);
+
+use File::stat;
+
+my $mtime = stat($filename)->mtime;
+
+

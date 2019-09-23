@@ -191,3 +191,52 @@ open(STDOUT, ">&SAVED") || die "Can't open";
 print "Here we are printing to the screen again.\n";
 # This output will go to the screen
 rename("temp","data");
+
+############
+print "----------Input Filter------------\n";
+
+open(INPIPE, "cal|");    # Windows (2000/NT) use:  date /T
+@today = <INPIPE>;
+print @today;
+close(INPIPE);
+
+
+print "---------Input filter again! to list the names of files which used print command. ----------\n";
+
+
+
+open (OPENGREP,"find . -size +2k -mtime +20 -exec ls  {} \\;|");
+while($filegrep=<OPENGREP>)
+{
+    print $filegrep;
+}
+
+
+
+#########
+print "\n-------------\“arguments filehandle\”-------\n";
+die "$0 requires an argument.\n" if $#ARGV < 0 ;
+
+print "@ARGV\n";
+print "$ARGV[1]\n";
+print "$ARGV[$#ARGV] is the last argument.\n";
+
+
+
+
+##########
+
+print "-----------\n";
+if ( $#ARGV < 1 )
+{
+    die " $0: pattern filename(s).\n";
+}
+
+$pattern=shift;
+
+while ($line=<ARGV>)
+{
+    print "$ARGV: $. : $line " if $line =~ /$pattern/i;
+    close(ARGV) if eof;
+}
+
