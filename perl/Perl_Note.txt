@@ -32,8 +32,94 @@ my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
         $atime,$mtime,$ctime,$blksize,$blocks)
            = stat($filename);
 
+Returns a 13-element list giving the status info for a file:
+
+
+  0 dev      device number of filesystem
+  1 ino      inode number
+  2 mode     file mode  (type and permissions)
+  3 nlink    number of (hard) links to the file
+  4 uid      numeric user ID of file's owner
+  5 gid      numeric group ID of file's owner
+  6 rdev     the device identifier (special files only)
+  7 size     total size of file, in bytes
+  8 atime    last access time in seconds since the epoch
+  9 mtime    last modify time in seconds since the epoch
+ 10 ctime    inode change time in seconds since the epoch (*)
+ 11 blksize  preferred I/O size in bytes for interacting with the
+             file (may vary from file to file)
+ 12 blocks   actual number of system-specific blocks allocated
+             on disk (often, but not always, 512 bytes each)
+
+!!!!!(The epoch was at 00:00 January 1, 1970 GMT.)
+
 use File::stat;
 
 my $mtime = stat($filename)->mtime;
+
+
+
+#################################
+############# localtime########
+#################################
+
+localtime EXPR
+localtime
+
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+
+$sec,$min,$hour:  seconds, minutes, and hours of the specified time.
+$mday 	       :  the day of the month 
+$mon           :  the month in the range 0..11 
+$year          :  contains the number of years since 1900.
+                  To get a 4-digit year write            : $year += 1900;
+                  To get the last two digits of the year : $year = sprintf("%02d", $year % 100);
+
+$wday          : the day of the week, with 0 indicating Sunday and 3 indicating Wednesday
+$yday          : the day of the year, in the range 0..364 (or 0..365 in leap years.)
+$isdst         : true if the specified time occurs during Daylight Saving Time, false otherwise.
+
+一个栗子：
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+my @aweek = qw(Sunday Monday Tuesday Wenday Thursday Friday Saturday);
+my @aDayTS= qw(Not-Daytime-saving Daytimesaving);
+print "今天是 ", $year +1900," 年", $mon +1," 月 $mday 号. 目前是$aDayTS[$isdst]。 \n", ;
+print "Today is $aweek[$wday], is the ", $yday, "th days of this year.\n";
+## to obtain the month and day:
+my @abbr = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+print "Today is : $abbr[$mon] $mday";
+print "\n";
+
+{output}:
+今天是 2019 年10 月 22 号. 目前是Not-Daytime-saving。 
+Today is Tuesday, is the 294th days of this year.
+Today is : Oct 22
+
+#########
+Note: If EXPR is omitted, localtime uses the current time (as returned by time).
+
+!!!!!! In scalar context, localtime returns the ctime(3) value:
+
+ 一个栗子：
+print scalar localtime;
+print "\n";
+[output]:
+Tue Oct 22 11:07:08 2019
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

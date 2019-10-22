@@ -1760,6 +1760,124 @@ my $mtime = stat($filename)->mtime;
 ##################   Chapter 11 Subroutines.   #####################
 ####################################################################
 
+#######local 和my 
+
+ Any variable declared with local is said to be dynamically scoped, which means it is visible from within the block
+ where it was created and visible to any functions called from within this block or any blocks (or subroutines) 
+nested within the block where it is defined. If a local variable has the same name as a global variable, 
+the value of the global one is saved and a new local variable is temporarily created. When the local variable 
+goes out of scope, the global variable becomes visible again with its original value(s) restored. 
+After the last statement in a subroutine is executed, its local variables are discarded. 
+local 在申明的函数内，以及调用这个函数的自函数内均有效。
+My  只在申明的函数内有效，调用的函数内无效。
+
+一个栗子：
+1   $friend="Louise";        # Global variables
+2   $pal="Danny";
+3   print "$friend and $pal are global.\n";
+4   sub guests {
+5       my $friend="Pat"; # Lexically scoped variable
+6       local $pal="Chris";  # Dynamically scoped variable
+7       print "$friend and $pal are welcome guests.\n";
+8       &who_is_it;          # Call subroutine
+    }
+
+9   sub who_is_it {
+10      print "You still have your global friend, $friend, here.\n";
+11      print "But your pal is now $pal.\n";  # Dynamically scoped
+    }
+
+12  &guests;                 # Call subroutine
+13  print "Global friends are back: $friend and $pal.\n";
+
+
+##### 11.2.1: Prototypes
+A prototype, also described as a template, tells the compiler how many and what types of arguments 
+the subroutine should get when it is called.o call subroutines that have been declared with a prototype, 
+the ampersand (&) must be omitted,
+Prototypes 告诉编译器，函数要带几个参数，都是什么类型。不过，调用函数的时候，调用符号得省略，否则prototype不起作用。
+换句话说，他可以在调用函数时，检查函数的参数定义。
+一个栗子：
+1   my $a=5;
+    my $b=6;
+    my $c=7;
+2   @list=(100,200,300);
+3   sub myadd($$) {       # myadd requires two scalar arguments
+        my($x, $y)=@_;
+        print $x + $y,"\n";
+    }
+4   myadd($a, $b);        # Okay
+5   myadd(5, 4);          # Okay
+6   myadd($a, $b, $c);    # Too many arguments
+
+
+
+###### 11.2.2return value
+$average    =  &ave(3, 5, 6, 20);
+returned value    call to subroutine
+
+The value returned is really the value of the last expression evaluated within the subroutine.
+The return function can also be used to return a specified value or to 
+return early from the subroutine based on some condition.
+
+可以是最有一个表达式的值，或者是设定的返回值
+
+一个栗子：
+    sub MAX {
+1       my($max) = shift(@_);
+2       foreach $foo ( @_ ){
+3           $max = $foo if $max < $foo;
+            print $max,"\n";
+        }
+        print "------------------------------\n";
+4       $max;
+    }
+    sub MIN {
+        my($min) = pop( @_ );
+        foreach $foo ( @_ ) {
+            $min = $foo if $min > $foo;
+            print $min,"\n";
+        }
+        print "------------------------------\n";
+        return $min;
+    }
+
+5   my $biggest = &MAX ( 2, 3, 4, 10, 100, 1 );
+6   my $smallest= &MIN ( 200, 2, 12, 40, 2, 20 );
+7   print "The biggest is $biggest and the smallest is $smallest.\n";
+
+所以，返回方式可以为如下两种：
+ $max;
+ return $min;
+
+
+##### Context  上下文 	#####
+perl对上下文是敏感的。 列表上下文与标量上下文。
+scalar and list. When mixing data types, results differ when an expression is evaluated in one or the other context.
+比如：
+@list = qw( apples pears peaches plums );  # List context 这里会获得一个数组。
+$number = @list;   #Scalar context。   这里得到的会是数组数量。 标量上下文
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
