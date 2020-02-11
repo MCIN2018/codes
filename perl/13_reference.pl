@@ -10,7 +10,7 @@ eval "\$$anmial='Ken';";
 
 print "why don't you call it ${$anmial}?\n";
 
-print "----------------\n\n";
+print "--------Dereferencing：--------\n\n";
 
 $num=5;
 $p = \$num;
@@ -18,11 +18,13 @@ $p = \$num;
 print 'The address asigned $p is ', $p,"\n";
 print " The Value stored at this address is $$p \n";
 
-print "--------13.4--------\n\n";
+print "--------13.4 Dereferencing--------\n\n";
 
 @toys=qw(Barbie Elmo ZThomas Barney );
 
 $num=@toys;
+print "number is $num. \n";
+
 %games=("Nintendo" => "Wii",
          "SOny"     => "PlayStation 3",
          "microsoft" => "Xbox 360",

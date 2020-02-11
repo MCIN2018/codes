@@ -2078,3 +2078,105 @@ Chapter 13. Does This Job Require a Reference?
 
 A reference is a variable that refers to another one. In short, it contains the address of 
 another variable.
+
+A hard reference is a scalar variable that holds the address of another type of data.
+硬引用(hard reference)是一种标量型变量，其中含有其他类型数据的地址。
+
+A symbolic reference names another variable rather than just pointing to a value.
+Typeglobs, variable names preceded by *, are a kind of symbolic reference. They are aliases.
+一个符号引用(symbolic reference)能为另一个变量命名，而不是指向其变量值 。typeglobs 就是一种符号引用，
+其变量名前缀是一个 * 字符。它们不过是变量的一种别名而已。
+
+Given:	*town = *city
+Then:	$town refers to the scalar $city
+@town refers to the array @city
+
+$town{"mayor"} refers to an element of a hash $city{"mayor"}
+
+############The strict Pragma
+To protect yourself from inadvertently using symbolic references in a program,
+ use the strict pragma with the refs argument. This causes Perl to check that symbolic
+ references are not used in the program
+使用　strict，参数 refs 可以防止误用符号链接。
+
+The strict pragma ensures that the program uses only hard references and, if it doesn't,
+ will abort during compilation and print an error message as shown in the output of this script.
+strict 编译指示保证程序只使用硬引用，否则就在编译时退出程序，并打印如此脚本输出内 容所示的出错信息。
+
+
+   #!/bin/perl
+    # Program using symbolic references
+1   use strict "refs";  #### 这一行，只有注释掉，才能执行下去。
+2   $animal="dog";
+3   $dog="Lady";
+4   print "Your dog is called ${$animal}\n";
+5   eval "\$$animal='Lassie';";
+6   print "Why don't you call her ${$animal}?\n";
+
+(Output)
+Can't use string ("dog") as a SCALAR ref while "strict refs" in use at
+symbolic.plx line 4.
+
+
+#########The Backslash Operator 反斜杠用于创建硬链接
+The backslash unary operator is used to create a hard reference
+In the following example, $p is the reference. It is assigned the address of the scalar $x.
+
+$p=\$x;
+
+#######Dereferencing the Pointer. 按地址访问指针
+
+If you print the value of a reference (or pointer), you will see an address.
+If you want to go to that address and get the value stored there，that is, dereference the pointer，
+the pointer must be prefaced by two "funny" symbols:
+1: the dollar sign, because the pointer itself is a scalar
+2: the symbol representing the type of data to which it points. 
+如果打印出引用的内容，会得到一个地址。如果想得到这个地址里存的数据，需要两个符号前缀。
+1:$ 符号，因为引用（或叫指针）本身也是一个普通标量，需要$符号得到其值。
+2: 获得实际指向的数据需要的符号，可能是$，可能是->就看其存的数据是什么类型了。
+
+一个栗子：
+$num=5;
+$p = \$num;
+
+print 'The address asigned $p is ', $p,"\n";
+print " The Value stored at this address is $$p \n";
+-------output:
+The address asigned $p is SCALAR(0x7ff1c700be70)
+ The Value stored at this address is 5 
+
+又一个栗子，这次数据不只是标量了：
+print "--------13.4 Dereferencing--------\n\n";
+
+@toys=qw(Barbie Elmo ZThomas Barney );
+
+$num=@toys;
+%games=("Nintendo" => "Wii",
+         "SOny"     => "PlayStation 3",
+         "microsoft" => "Xbox 360",
+);
+$ref1=\$num;
+$ref2=\@toys;
+$ref3=\%games;
+
+print "There are $$ref1 toys.\n";
+print "THey are : ",join(",",@$ref2),"\n";
+print "Jessica's favourite toy is $ref2->[0].\n";
+
+while (($key,$value)=each(%$ref3))
+{
+    print "$key => $value\n";
+}
+
+print "They waited in line for a $ref3->{'Nintendo'}\n";
+
+--　output:
+--------13.4 Dereferencing--------
+There are 4 toys.
+THey are : Barbie,Elmo,ZThomas,Barney
+Jessica's favourite toy is Barbie.
+SOny => PlayStation 3
+microsoft => Xbox 360
+Nintendo => Wii
+They waited in line for a Wii
+	
