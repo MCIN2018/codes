@@ -17,3 +17,22 @@ print "\n";
 
 print scalar localtime;
 print "\n";
+
+
+print " Effective uid is :", -o "./my_time.pl";
+
+print "\n";
+
+
+#stat
+my @array=stat("Perl_Note.txt");
+print "atime is:",$array[8],"\n";
+print "mtime is:",$array[9],"\n";
+print "inode time is:",$array[10],"\n";
+print "mode is:",$array[2],"\n";
+printf "Permissions are %04o\n", 33279 & 07777;
+
+
+print "Atime is (Readable):",scalar localtime($array[8]),"\n";
+print "mtime is (Readable):",scalar localtime($array[9]),"\n";
+print "Inode time is (Readable):",scalar localtime($array[10]),"\n";

@@ -1,4 +1,24 @@
 
+
+#### @INC
+
+perl -e 'print join("\n",@INC)'
+perl -e 'for (@INC) { printf "%d %s\n", $i++, $_ }'
+
+######## perldoc
+
+Perldoc -f lc ( to get the info of function lc)
+
+
+######ucfirst
+
+Perldoc -f ucfirst
+ucfirst Returns the value of EXPR with the first character in uppercase;
+This function behaves the same way under various pragma, such
+               as in a locale, as "lc" does.
+
+
+
 ##### To save an array as a string
 把数组转存为字符串
 
@@ -27,6 +47,53 @@ $string_9_e=join("\n",@array_9_e);
 
 #######  遍历数组方法
 
+
+
+###################################
+##########stat函数#############
+###################################
+
+文件测试：
+
+Operator	Meaning
+-r $file	True if $file is a readable file.（是否可读）
+-w $file	True if $file is a writeable file.（是否可写）
+-x $file	True if $file is an executable file.（是否可执行）
+-o $file	True if $file is owned by effective uid.（effective 用户）
+  		以上都是针对　uid,而非ruid
+  		uid        effective user ID
+  		ruid       real user ID
+
+存在情况判断：
+-e $file	True if file exists.（测试文件是否存在，存在为真）
+-z $file	True if file is zero in size.（文件是否存在且为空。对目录而言，永远为假）
+-s $file	True if $file has nonzero size. Returns the size of the file in bytes.
+                文件是否不空。返回值是文件大小，单位字节。如果返回值为0，说明文件为空。
+
+类型判断
+-f $file	True if $file is a plain file.(是否为普通文件）
+-d $file	True if $file is a directory file.（是否为目录）
+-l $file	True if $file is a symbolic link.（是否为软链接，即字符链接）
+-p $file	True if $file is a named pipe or FIFO.（是否为命名管道，即FIFO)
+		管道读写数据的原理是先进先出(First In First Out) 所以叫做FIFO 
+-S $file	True if $file is a socket.（是否为　socket)
+-b $file	True if $file is a block special file.(是否为块设备）
+-c $file	True if $file is a character special file.（是否为字符设备文件）
+-T $file	True if $file is a text file.（文本文件）
+-B $file	True if file is a binary file.（二进制文件）
+
+
+所有权测试：
+-u $file	True if $file has a setuid bit set.（是否设置了setuid）
+-g $file	True if $file has a setgid bit set.（是否设置了setgid）
+-k $file	True if $file has a sticky bit set. （是否设置了sticky
+-t $file	True if filehandle is opened to a tty.(文件句柄是否为TTY设备(该测试只对文件句柄有效))
+
+-M $file	Age of the file in days since modified.(最后一次修改距离目前的天数 　mtime）
+-A $file	Age of the file in days since last accessed.（最后一次访问距离目前的天数 atime）
+-C $file	Age of the file in days since the inode changed.（最后一次inode修改距离目前的天数 ctime）
+
+
 #### stat 的值
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
         $atime,$mtime,$ctime,$blksize,$blocks)
@@ -53,9 +120,118 @@ Returns a 13-element list giving the status info for a file:
 
 !!!!!(The epoch was at 00:00 January 1, 1970 GMT.)
 
+
+0 dev 设备号 驱动器号（C：通常是2，D：通常是3，等等）
+1 ino 索引节号 总是0
+2 mode 文件的类型与权限
+3 nlink 链接（硬链接）数
+4 uid 文件所有者的用户ID（UID）总是0
+5 gid 文件所有者的组ID（GID）总是0
+6 rdev 特殊文件信息 驱动器号（重复）
+7 size 文件大小（以字节计）文件大小（以字节计）
+8 atime 上次访问的时间 
+9 mtime 上次修改的时间 
+10 ctime Inode修改时间 可以算做文件的创建时间
+11 blksz 磁盘块的大小 
+12 blocks 文件中的块的数量 
+
+
+
+The File::stat module provides a convenient, by-name access mechanism:
+
+    use File::stat;
+    my $sb = stat($filename);
+    printf "File is %s, size is %s, perm %04o, mtime %s\n",
+           $filename, $sb->size, $sb->mode & 07777,
+           scalar localtime $sb->mtime;
+
+
+
+
+
+
+
+
+
+
 use File::stat;
 
 my $mtime = stat($filename)->mtime;
+
+一个栗子：
+mode，包括文件类型和文件权限。如果只需要文件权限，需要把文件类型的部分，用位运算符的与操作(&）屏蔽掉
+you should mask off the file type portion and (s)printf using a "%o" if you want to see the real permissions.）
+
+
+my @array=stat("Perl_Note.txt");
+print "atime is:",$array[8],"\n";
+print "mtime is:",$array[9],"\n";
+print "inode time is:",$array[10],"\n";
+print "mode is:",$array[2],"\n";
+printf "Permissions are %04o\n", $array[2] & 07777;
+
+Mode： 33279(十进制decimal)->100777(八进制octal)- 001-000-000-111-111-111(二进制 binary)
+      其中the first - isn't a permission. As we're dealing with groups of three bits, we use octal
+ (which maps groups of three bits to 0-7) for convenience。
+      与 111-111-111-111 
+777 is decimal, not octal. If you want only the last nine bits, then AND the number with octal 777: 0777
+
+
+man 2 stat about mode:
+
+S_IFMT     0170000   bit mask for the file type bit fields
+S_IFSOCK   0140000   socket
+S_IFLNK    0120000   symbolic link
+S_IFREG    0100000   regular file
+S_IFBLK    0060000   block device
+S_IFDIR    0040000   directory
+S_IFCHR    0020000   character device
+S_IFIFO    0010000   FIFO
+S_ISUID    0004000   set UID bit
+S_ISGID    0002000   set-group-ID bit (see below)
+S_ISVTX    0001000   sticky bit (see below)
+S_IRWXU    00700     mask for file owner permissions
+S_IRUSR    00400     owner has read permission
+S_IWUSR    00200     owner has write permission
+S_IXUSR    00100     owner has execute permission
+S_IRWXG    00070     mask for group permissions
+S_IRGRP    00040     group has read permission
+S_IWGRP    00020     group has write permission
+S_IXGRP    00010     group has execute permission
+S_IRWXO    00007     mask for permissions for others (not in group)
+S_IROTH    00004     others have read permission
+S_IWOTH    00002     others have write permission
+S_IXOTH    00001     others have execute permission
+
+(Note that the leading 0 means those numbers are octal numbers.)
+
+You can see seven fields in the mode word.
+
+S_IFMT   file type
+S_ISUID  set UID bit
+S_ISGID  set-group-ID bit
+S_ISVTX  sticky bit
+S_IRWXU  owner permissions
+S_IRWXG  group permissions
+S_IRWXO  other permissions
+
+另一个栗子
+
+
+找出12小时内修改了的文件，
+用stat 函数。利用现在时间和修改时间减，得出修改的间隔。都是是从1970年起的秒数。
+和12小时的秒数相比，查找修改时间符合要求的：
+     my $lmtimedate = (stat $myfile)[9];
+     my $now = time();
+     my $howLongAgo = $now - $lmtimedate; #Since epoch time is just a number of seconds, it's easy to calculate short distances in time. 60*60 = 1 hour * 12 = 12 hours.
+    
+    if ($howLongAgo <= (60*60*12))
+    {
+        print "$myfile was edited less than 12 hours ago.\n";
+    }
+
+
+
 
 
 

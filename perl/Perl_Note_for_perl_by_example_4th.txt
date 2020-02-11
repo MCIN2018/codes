@@ -1732,6 +1732,37 @@ while ($line=<ARGV>)
 data: 6 : Karen Evich 601
  db: 7 : Karen Evich
 
+
+
+#############################10.3File testing
+
+
+Operator	Meaning
+-r $file	True if $file is a readable file.
+-w $file	True if $file is a writeable file.
+-x $file	True if $file is an executable file.
+-o $file	True if $file is owned by effective uid.
+-e $file	True if file exists.
+-z $file	True if file is zero in size.
+-s $file	True if $file has nonzero size. Returns the size of the file in bytes.
+-f $file	True if $file is a plain file.
+-d $file	True if $file is a directory file.
+-l $file	True if $file is a symbolic link.
+-p $file	True if $file is a named pipe or FIFO.
+-S $file	True if $file is a socket.
+-b $file	True if $file is a block special file.
+-c $file	True if $file is a character special file.
+-u $file	True if $file has a setuid bit set.
+-g $file	True if $file has a setgid bit set.
+-k $file	True if $file has a sticky bit set.
+-t $file	True if filehandle is opened to a tty.
+-T $file	True if $file is a text file.
+-B $file	True if file is a binary file.
+-M $file	Age of the file in days since modified.
+-A $file	Age of the file in days since last accessed.
+-C $file	Age of the file in days since the inode changed.
+
+
 ###############练习题B的第三题非常好：找出12小时内修改了的文件，
 用stat 函数。利用现在时间和修改时间减，得出修改的间隔。都是是从1970年起的秒数。
 和12小时的秒数相比，查找修改时间符合要求的：
@@ -1860,29 +1891,190 @@ $number = @list;   #Scalar context。   这里得到的会是数组数量。 标
 
 
 
+##########wantarray.   ########
+The wantarray Function and User-Defined Subroutines
+
+to determine whether the subroutine should be returning a list or a scalar. If your subroutine is called in list context (i.e., the return value will be assigned to an array), then wantarray will return true; otherwise, it will return false.
+
+Wantarray 数组可以决定返回的上下文是标量还是数组，根据上下文需要的类型来判断
+
+一个栗子：
+
+print "What's your full name?\n";
+chomp($fullname=(<STDIN>));
+@arrayname=title($fullname);
+print "Full name is : $arrayname[0],$arrayname[1].\n";
+
+print "Your favourate book is?\n";
+chomp($mybook=(<STDIN>));
+$goodbook=title($mybook);
+print "My Favourite book is: $goodbook\n";
+
+sub title{
+    my $text= shift;
+    my $newstring;
+    $text=lc($text);
+    my @newtext=split(" ",$text);
+    foreach my $word(@newtext)
+    {
+        $word=ucfirst($word);
+        $newstring .= "$word ";
+    }
+    my @newarray=split(" ",$newstring);
+    chop($newstring);
+    return wantarray ? @newarray : $newstring;
+}
+
+[output]:
+What's your full name?
+Peter Parker
+Full name is : Peter,Parker.
+Your favourate book is?
+Harry potter and half blood prince
+My Favourite book is: Harry Potter And Half Blood Prince
+
+
+
+
+!!!!!!11.3 和 exercise3 都没看！！！
 
 
 
 
 
+############################################################
+Chapter 12. Modularize It, Package It, and Send It to the Library!
+############################################################
+
+
+#########12.2The Standard Perl Library
+The Perl 5 modules end with a .pm extension. In Perl 5, the .pm files are called modules.
+ The .pm files are modules written in two programming styles: procedural and 
+object oriented. The module filenames start with a capital letter. The .pm filenames 
+starting with a lowercase letter are a special type of module, called a pragma. 
+A pragma is a module that tells the compiler that certain conditions must be checked 
+in a Perl program before it can run. Files that have no extension at all are 
+subdirectories. They contain common modules that are divided into several .pm files; 
+for example, the Math subdirectory contains BigFloat.pm, BigInt.pm, Complex.pm, 
+and Trig.pm.
+
+模块后缀.pm.  有面向过程与面向对象两类模块。　模块文件名以大写字母开头。那些.pm 文件名以小写开头的，
+是特殊的模块，成为编译指示，负责告诉编译器在运行一个perl程序前，需要具备的先决条件。没有扩展名的文件是
+目录，他们一般里面都包含好几个.pm模块。
+
+######The @INC Array
+The special array @INC contains the directory path to where the library routines are located.
+@INC中存着库位置的路径。
+
+Perl　-V
+
+###### require
+The require function checks to see if the library has already been included.
+require (Expr)
+require Expr
+require
+
+
+######Using Perl to Include Your Own Library
+When including user-defined routines or adding routines to a library, make sure to include 1; 
+(a nonzero value) as the last line of the routine. 
+
+Perl　-V 获得　@INC的信息：
+
+路径in my  Mac:libpth=/usr/lib /usr/local/lib
+$ perl -e 'print "@INC\n"' 
+/Library/Perl/5.18/darwin-thread-multi-2level 
+/Library/Perl/5.18 
+/Network/Library/Perl/5.18/darwin-thread-multi-2level
+ /Network/Library/Perl/5.18 
+/Library/Perl/Updates/5.18.2 
+/System/Library/Perl/5.18/darwin-thread-multi-2level 
+/System/Library/Perl/5.18 
+/System/Library/Perl/Extras/5.18/darwin-thread-multi-2level 
+/System/Library/Perl/Extras/5.18 .
+
+
+So:路径是：
+/System/Library/Perl/5.18
+....
+
+
+##### Using Perl to Include Your Own Library 
+#### 装载自己的模块库。
+一个好例子：
+1: 先创建一个自己的模块库：
+/Users/mc/codes/perl/mylib
+2:在这个模块库下，创建一个模块：average.pl：
+cat average.pl
+
+#!/usr/bin/perl
+package average; # Declare a package
+     # Average a list of grades
+   sub ave {
+       my(@grades)=@_;
+        my($num_of_grades)=$#grades + 1;
+        foreach $grade ( @grades ){
+             $total += $grade;
+        }
+       $total/$num_of_grades;   # What gets returned
+    }
+1; # Make sure the file returns true or require will not succeed!
+
+3:在你的工作目录下，在你的程序中将这个模块库倒入。
+我的工作目录是：/Users/mc/codes/perl 
+/Users/mc/codes/perl/12_modules.pl：
+#!/usr/bin/perl
+unshift(@INC, "/Users/mc/codes/perl/mylib");
+require "average.pl";
+print "Enter your midterm scores.\n";
+@scores=split(' ', <STDIN>);
+printf "The average is %.1f.\n", average::ave(@scores);
+# The ave subroutine is found in a file called average.pl
+
+
+#########12.2.3. Modules and .pm Files
+When using one of the modules (those files ending in .pm) provided in the standard Perl library, you must first make sure the @INC array contains the full pathname to your library distribution and that you include the use function with the module name.
+要保证@INC数组含有指向发布包库的全路径，并使用 use 函数引用所需模块名。
+ perldoc 可以获得库的信息。
+perldoc CGI
+
+
+##########The use Function (Modules and Pragmas) use函数（模块与编译指示）
+
+The use function allows Perl modules and pragmas to be imported into your program at compile time. 
+The use function will not import a module if the module's filename does not have the .pm extension.
+ The require function does the same thing but does not do imports and loads the module at runtime.
+　use可以在编译时，将模块导入程序中。后缀必须时.pm。　require实现的差不多，不过，不是在运行的时间。
+To use a module found in a subdirectory, the directory name is followed by two colons and 
+the name of the module, such as Math::Bigfloat.pm
+那些在子目录下的模块，要用双冒号调用：Math::Bigfloat.pm
+
+
+A pragma, spelled in lowercase letters, is a directive to the compiler that your program 
+should behave in a certain way and, if it doesn't, the program will abort. Some common pragmas 
+are lib, strict, subs, and diagnostics.
+编译指示时小写开头的。规范程序应该遵守的一些规则。比如：lib, strict, subs, and diagnostics等都是编译指示。
+Format
+use Module;
+use Module ( list );
+use Directory::Module;
+use pragma (list);
+no pragma;
+
+
+############12.2.4. Exporting and Importing 导入导出
 
 
 
 
 
+############################################################
+Chapter 13. Does This Job Require a Reference?
+############################################################
 
 
 
+################13.1. What Is a Reference? What Is a Pointer?
 
-
-
-
-
-
-
-
-
-
-
-
-
+A reference is a variable that refers to another one. In short, it contains the address of 
+another variable.
