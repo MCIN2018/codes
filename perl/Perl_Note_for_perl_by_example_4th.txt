@@ -2179,4 +2179,276 @@ SOny => PlayStation 3
 microsoft => Xbox 360
 Nintendo => Wii
 They waited in line for a Wii
-	
+
+
+
+#############13.1.3. References and Anonymous Variables
+It is not necessary to name a variable to create a reference (pointer) to it. If a variable or
+ subroutine has no name, it is called anonymous. If an anonymous variable (or subroutine) is
+ assigned to a scalar, then the scalar is a reference to that variable (subroutine).
+
+The arrow operator (>), also called the infix operator, is used to dereference the 
+reference to anonymous arrays and hashes. Although not really necessary, the arrow operator 
+makes the program easier to read.
+
+一个变量想拥有一个引用（或者叫指针），并不一定它本身也必须有一个名字。换言之，它完全可以是匿名的（anonymous).
+假如一个匿名的变量被赋予一个标量，那这个标量就作为它的引用了。可以用箭头符号来获得引用指向的变量内容（dereference).
+不用也行，不过用了它会更易读。
+
+
+######Anonymous Arrays 匿名数组
+Anonymous array elements are enclosed in square brackets ([]). These square brackets are not to
+ be confused with the square brackets used to subscript an array. Here they are used as an 
+expression to be assigned to a scalar. The brackets will not be interpolated if enclosed 
+within quotes. The arrow (infix) operator is used to get the individual elements of the array.
+
+匿名数组的元素被放在方括号里。换言之，把一些数据放在方括号里，再指给某个标量，就完成了标量作为数据的引用。
+这个方括号，可和引用数组元素的方括号不同。方在方括号里，就被当作匿名数组的元素，不会去解释了。用箭头，可以获取数组里的元素
+->[]
+举起一个栗子：
+$arrayref = [ Hello, World, I, love, Figure, Skating ];
+print "The value of the reference is \$arrayref \n $arrayref.\n";
+print "$arrayref->[1]\n";
+print "$$arrayref[1]\n";
+print "${$arrayref}[1]\n";
+print "@{$arrayref}\n";
+
+-----output:
+The value of the reference is $arrayref 
+ ARRAY(0x7fa5f400b710).
+World
+World
+World
+Hello World I love Figure Skating
+
+
+###############Anonymous Hashes 匿名哈希
+An anonymous hash is created by using curly braces ({}). You can mix array and hash composers 
+to produce complex data types. These braces are not the same braces that are used when 
+subscripting a hash. The anonymous hash is assigned to a scalar reference.
+用波浪括号来创建匿名哈希。也可以把哈希与数组混合起来创建复杂的数据类型。同样赋予标量就构成了标量对匿名哈希的引用。
+
+一个栗子
+my $hashref = { "Name"=>"Woody",
+                "Type"=>"Cowboy"};
+print $hashref->{"Name"}, "\n";
+print keys %$hashref, "\n";
+print values %$hashref, "\n";
+-----output:
+Woody
+NameType
+WoodyCowboy
+
+##########Nested Data Structures
+The ability to create references (pointers) to anonymous data structures lends 
+itself to more complex types. For example, you can have hashes nested in hashes 
+or arrays of hashes or arrays of arrays, etc.	
+这种为匿名数据类型建立引用的方式，可以产生复杂的类型。哈希数组的，无穷无尽。
+
+Just as with simpler references, the anonymous data structures are dereferenced 
+by prepending the reference with the correct funny symbol that represents its 
+data type. For example, if $p is a pointer to a scalar, you can write $$p to 
+dereference the scalar, and if $p is a pointer to an array, you can write @$p 
+to dereference the array or $$p[0] to get the first element of the array. 
+
+根据不同的数据类型，调用的前置符号可以区别开来使用。比如，$p是个标量的引用，那就可以把$$p写入
+一个标量里。$p一个数组的引用，@$p可以写入数组，等等。
+
+##### Lists of lists
+
+A list may contain another list or set of lists, most commonly used to create 
+a multidimensional array.
+一个列表可以包含另一个列表或列表集，一般用来创建多维数组。
+
+一个栗子：
+my $arrays_13=['1','2','3',['red','yellow','blue',]];
+# three scalar elements, one refernence element.
+
+# to print the three scalar elements:
+for ($i=0;$i<3;$i++)
+{
+    print $$arrays_13[$i],"\n";
+    #print $arrays_13->[$i],"\n"; # The same result
+}
+#to print the elements of the reference element.
+print "\n";
+print $$arrays_13[3];
+print "\n";
+for ($i=0;$i<3;$i++)
+{
+    print $$arrays_13[3]->[$i];
+    print " ---  ";
+    print $arrays_13->[3]->[$i],"\n";
+ 
+}
+# to print with type funny symbol.
+print "\n";
+print "@{$arrays_13}\n";
+print "@{$arrays_13->[3]}\n";
+
+--　OUTPUT:
+1
+2
+3
+
+ARRAY(0x7fb3350138e8)
+red ---  red
+yellow ---  yellow
+blue ---  blue
+
+1 2 3 ARRAY(0x7fb3350138e8)
+red yellow blue
+
+
+#############13.1.5:reference and subroutines 
+### anonymous subroutines
+An anonymous subroutine is created by using the keyword sub without a subroutine
+ name. The expression is terminated with a semicolon.
+
+一个栗子：
+my $subref= sub {print @_ ;};
+&$subref('a','b','c');
+print "\n";
+
+---OUTPUT:
+abc
+
+Note:The scalar $subref is assigned an anonymous subroutine by reference. 
+The only function of the subroutine is to print its arguments stored in 
+the @_ array.
+The subroutine is called via its reference and passed three arguments.
+
+
+########Subroutines and Passing by Reference
+When passing arguments to subroutines, they are sent to the subroutine and
+ stored in the @_ array. If you have a number of arguments, say an array, 
+a scalar, and another array, the arguments are all flattened out onto the 
+@_ array. It would be hard to tell where one argument ended and the other
+ began unless you also passed along the size of each of the arrays, and 
+then the size would be pushed onto the @_ array and you would have to get
+ that to determine where the first array ended, and so on. The @_ could 
+also be quite large if you are passing a 1,000-element array. So, the 
+easiest and most efficient way to pass arguments is by address
+当子程序的参数多，而且类型很杂的时候，传递参数很容易混淆。比如参数里有标量还是数组，传着传着
+就会搞不清标量和数组里面各个元素的开始结束位置等。
+因此，最简单高效的传参数方式，是采用地址。
+
+
+一个栗子：
+@toys = qw(Buzzlightyear Woody Bo);
+$num  = @toys;
+
+sub gifts
+{
+    my ($n,$t)=@_;
+    print "There are $$n gifts\n";
+    print "They are: @$t\n";
+}
+gifts(\$num,\@toys);
+
+---OUTPUT:
+There are 3 gifts
+They are: Buzzlightyear Woody Bo
+
+
+
+另一个栗子：
+#########exmaple 13.14reference to pass arrays.
+
+my @list1=(1 .. 100);
+my @list2=(5,10,15,20);
+
+sub addemup
+{
+    my($arr1,$arr2)=@_;
+    my ($total);
+    print $arr1,"\n";
+    print $arr2,"\n";
+    
+    foreach $num(@$arr1,@$arr2)
+    {
+        $total+=$num;
+    }
+    return $total;
+}
+
+print "The total is:", &addemup(\@list1,\@list2);
+
+output：
+ARRAY(0x7fa5350452a0)
+ARRAY(0x7fa535046618)
+The total is:5100
+
+ 注意！！！ 上面当我写作：foreach $num($arr1,$arr2)，输出是：
+ARRAY(0x7fe58f8090a0)
+ARRAY(0x7fe58f80b018)
+The total is:281247863619768
+可见！！！！！ 　@$arr1带入的是数组地址对应的数组，而　$arr存的是地址，而非数组内容！！！切记！！！
+
+
+
+###########
+13.1.6. Filehandle References
+One of the only ways to pass a filehandle to a subroutine is by reference. 
+You can use a typeglob to create an alias for the filehandle and then use the backslash
+ to create a reference to the typeglob. Wow...
+把文件句柄传递函数参数，可能最好的方法就是通过引用了。
+可以先给文件句柄建个别名，然后用反斜号建立引用。嘿嘿嘿...
+
+一个栗子：
+open (README,"/etc/passwd") || die;
+
+&readit(\*README);
+
+sub readit{
+    my ($passwd)=@_;
+    print "passwd is $passwd.\n";
+    while (<$passwd>)
+    {
+        #    print; #打印出所有，所以我屏了。
+    }
+}
+
+SEEK(README,0,0);
+
+OUTPUT:
+passwd is GLOB(0x7fd33481d8b8).
+Undefined subroutine &main::SEEK called at ./13_reference.pl line 158, <README> line 108.
+
+
+#############13.1.7 the ref Function
+The ref function is used to test for the existence of a reference. If the argument for ref
+ is a pointer variable, ref returns the type of data the reference points to; e.g., 
+SCALAR is returned if the reference points to a scalar, and ARRAY is returned if it 
+points to an array. If the argument is not a reference, the null string is turned.
+Ref用来测试一个引用是否存在。如果测试的参数是个指向某种类型的指针引用，会返回具体类型。就是说，返回标量，数组等等
+
+What Is Returned	Meaning
+REF	Pointer to pointer
+SCALAR	Pointer to scalar
+ARRAY	Pointer to array
+HASH	Pointer to hash
+CODE	Pointer to subroutine
+GLOB	Pointer to typeglob
+
+
+一个栗子：
+sub gifts;     # Forward declaration
+ $num = 5;
+ $junk = "xxx";
+ @toys = qw/Budlightyear Woody Thomas/ ;
+ gifts( \$num, \@toys, $junk );
+ sub gifts {
+ my( $n, $t, $j) = @_;
+  print "\$n is a reference.\n" if ref($n);
+  print "\$t is a reference.\n" if ref($t);
+  print "\$j is a not a reference.\n" if ref($j);
+  printf "\$n is a reference to a %s.\n", ref($n);
+  printf "\$t is a reference to an %s.\n", ref($t);
+}
+
+OUTPUT:
+$n is a reference.
+$t is a reference.
+$n is a reference to a SCALAR.
+$t is a reference to an ARRAY.
