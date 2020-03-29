@@ -2452,3 +2452,494 @@ $n is a reference.
 $t is a reference.
 $n is a reference to a SCALAR.
 $t is a reference to an ARRAY.
+
+
+
+###### 13.2 What you should know
+
+1: what is the difference between a symbolic and a hard reference.
+ A hard reference is a scalar variable that holds the address of another 
+Type of data.
+A symbolic reference names another variable rather than just pointing 
+to a value.
+
+
+2: what is a typeglob?
+Typeglobs, names preceded by *,are a kind of symbolic reference. 
+They are alias.
+ 
+3: How do you create a pointer to a hash?
+
+By using a curly braces ({}):
+my $refhash={"Name"=>"Christine
+	       "Type"=>"Idiot"};
+4:How can you tell a anonymous array from a named array?
+
+$arrayref=[A, B ,C,D]; : anonymous array $arrayref->[1],$$arrayref[1],${$arrayref}[1]
+@array="E ,F ,G ,H";     : named array. 
+
+5:Show two ways to dereference this pointer
+$ptr={'Name'=>"John"};
+
+$$ptr{"Name"}: John
+$ptr->{"Name"}
+
+测试代码如下：
+my $ptr={'Name'=>"John"};
+print $$ptr{"Name"},"\n";
+print " The second:",$ptr->{"Name"},"\n";
+
+
+6:How do you dereference this pinter? $p=\$x;
+
+$$p
+
+测试代码如下：
+my $x="Christine is a fool.";
+$p=\$x;
+print "the content of \$x is:",$$p,"\n";
+
+
+7:what is meant by a nested hash?
+Create more complex types.
+
+8:How do you create a two-dimensional array?
+my $matrix = [
+                [ 0, 2, 4 ],
+                [ 4, 1, 32 ],
+                [ 12, 15, 17 ]
+               ] ;
+print "Row 3 column 2 is $matrix->[2]->[1].\n";
+
+
+9:What is the advantage of passing by reference?
+
+When passing arguments to subroutines, they are sent to the subroutine and stored in 
+the @_ array. If you have a number of arguments, say an array, a scalar, and another
+ array, the arguments are all flattened out onto the @_ array. It would be hard to 
+tell where one argument ended and the other began unless you also passed along the
+ size of each of the arrays, and then the size would be pushed onto the @_ array 
+and you would have to get that to determine where the first array ended, and so on.
+ The @_ could also be quite large if you are passing a 1,000-element array. 
+So, the easiest and most efficient way to pass arguments is by address.
+
+10:What is the purpose of the ref function?
+The ref function is used to test for the existence of a reference. 
+
+
+
+###### 13.3: exercise : It's not polite to point
+Rewrite tripper (from Chapter 11) to take two pointers as arguments and copy 
+the arguments from the @_ in the subroutine into two my pointer variables.
+见13_exercise.pl
+
+
+
+
+################################################################
+###chapter 14: Bless Those Things! (Object-Oriented Perl)#######
+################################################################
+
+#########14.1 The OOP Paradigm 面向对象示例
+
+Key OOP Words
+Word			Perl Meaning
+Data encapsulation	（封装）Hiding data and subroutines from the user, as in a package
+Inheritance		（继承）The reuse of code, usually from a library where a package inherits from other packages
+Polymorphism		（多态）Literally "many forms" and specifically, the ability to extend the functionality of a class
+Object			A referenced type that knows what class it belongs to; an instance of a class 一个名词，比如一个人，一只猫，一台电脑，等等。
+Method			A special subroutine that manipulates objects 动词，对这个名字的动作或者它会有的动作，比如（人）吃饭，猫（挠人），（电脑）死机等。
+Class			A package that contains data and methods
+Constructor		构造函数 A method that creates and initializes an object
+Destructor		（析构函数）A method that destroys an object
+Setters/Getters		set/get方法 Methods that store data in an object or fetch data from an object
+
+Object			An object can be described as a noun 一个名词，比如一个人，一只猫，一台电脑，等等。
+Method			Verbs that describe what the object can do or what can be done to it 动词，对这个名字的动作或者它会有的动作，比如（人）吃饭，猫（挠人），（电脑）死机等。
+Properties( or attributes)	the adjectives that describe the object 属性或特性。形容词，形容这个名词的。愚蠢的（人），贪婪的（猫），贵（电脑）
+
+
+####################
+14.2. Classes, Objects, and Methods
+
+14.2.3 Class and privacy
+Perl does not strictly monitor public/private borders within its modules. To keep variables private, the my function is used
+用my确定私有化
+The my variables exist only within the innermost enclosing block, subroutine, eval, or file. The my variables cannot be accessed from another package by using the double colon (or single apostrophe), because my variables are not related to any package; they are not stored in the symbol table of the package in which they are created.
+my变量只存在于最内层的模块，子函数，eval或者文件中。别处均不能引用。即使自己模块的符号表也别想。
+
+举起一个栗子：
+#Example 14.1.
+$name="Susan";
+my $birthday=1942;
+
+package nosy;
+print "Hello $main::name.\n";
+print "You were born in $main::birthday?\n";
+
+[output]:
+Hello Susan.
+You were born in ?
+
+
+####14.2.4 Objects
+
+To begin with, an object in Perl is created by using a reference. A reference, if you recall, is a scalar that holds the address of some variable. It's a pointer. 
+用引用来创建对象（Object）。 一个引用就是一个指向某个变量地址的标量。
+所以，它是个指针。
+A reference might also point to a variable or subroutine that has no name, called an anonymous variable.
+一个引用指针也可以指向匿名变量或自函数，指向数组啦，哈希表啥的是很平常的。
+
+my $ref  = { "Owner"=>"Tom",  "Price"=>"25000" };
+To access a value in the anonymous hash, the reference (pointer) $ref can be dereferenced by using the arrow operator as follows:
+这个指向匿名哈希的指针，这样来解析：
+$ref->{"Owner"}
+
+To make a Perl object, first a reference is created.The reference normally is assigned the address of an anonymous hash. The hash will contain the data members, properties, of the object. In addition to storing the address of the hash, the reference must know what package it belongs to. This is done by creating the reference and then "blessing" it into a package. The bless function acts on the "thing" being referenced in the package, not the reference itself.
+通过引用匿名哈希来创建对象。哈希里存着对象属性能信息。
+但和传统引用不同的是，普通引用只存个地址就可以了，可对象引用必须得存储对象隶属于那个包，也就是类。这就需要bless.
+不过，bless的是只引用指向的内容，也就是对象，可不是引用本身。
+
+my $ref  = { Owner => "Tom",  Price => 250000 };    # This is the object
+bless( $ref, Class);   # The object is blessed into the package named Class
+return $ref;           # A reference to the object is returned
+
+
+######## bless 函数
+bless REFERENCE, CLASSNAME
+bless REFERENCE
+
+To be more technical, the first argument to the bless function must be pointer. The bless function internally tags whatever the pointer is pointing at (called the referent) with a reference to the package where it belongs. This is how an object is created.
+bless 函数使用引用寻找所需的对象，并能返回指向该对象的引用。由于 bless 操作将把对象 和特定的包(类)关联起来，因此 Perl 总是能知道各个对象各自属于什么包。
+
+ 
+一颗栗子：
+package House;          # Package declaration
+
+my $ref = { "Owner"=>"Tom", #Anonymous hash; data for the package
+    "Price"=>"25000", # Properties/attributes
+};
+
+print "The value of \$ref  before blessed is: $ref.\n";
+print "The ref function returns （Curious）:",ref($ref), ".\n";
+bless($ref, House);
+
+# The bless function creates the object. The hash referenced by
+# $ref  is the object. It is blessed into
+# the package; i.e., an internal pointer is created to keep track
+# of the package where it belongs.
+
+print "The bless function tags the hash with its package name.\n";
+print "The value of \$ref is: $ref.\n";
+print "The ref function returns the class (package) name:",ref($ref), ".\n";
+
+[output]:
+The value of $ref  before blessed is: HASH(0x7ff1058030e8).
+The ref function returns （Curious）:HASH.
+The bless function tags the hash with its package name.
+The value of $ref is: House=HASH(0x7ff1058030e8).
+The ref function returns the class (package) name:House.
+
+其中最后一个ref函数的使用。ref函数本是会返回引用所指的类型，比如是哈希还是数组标量等，
+但在对象被bless以后，会返回模块（类）的名字。
+
+
+
+#####14.2.6 Methods
+A method is a subroutine that operates on an object. It is a special subroutine that 
+belongs to a class and expects its first argument to be either a package name or a 
+reference to an object. This argument is sent by Perl implicitly. Otherwise, it looks 
+like any other subroutine. A method is used primarily to create an object, to assign or
+ change the data in the object, or to retrieve data from an object
+
+Method (方法）是操作一个对象（object)的子函数(subroutine).它隶属于一个类，并需要包或指向对象的指针作为
+第一个参数。当然这第一个参数perl会为你默默搞定。除此之外，它与普通子函数一样。方法主要目的是用来创建对象，分配
+或改变对象里的数据，或从对象中提取数据。
+
+## types of methods:方法的类型
+There are two types of methods: class (or static) methods and instance (or virtual)
+ methods.The class method expects a class name as its first argument, and the 
+instance method expects an object reference as its first argument.
+
+有两类方法：类方法或静态方法，实例方法或虚方法。类方法的第一个参数是类名，实例方法的第一个参数需要是对象索引。
+
+class method： In object-oriented programs, a constructor function is a class method 
+used to create an object. In Perl, this method is commonly called new, although you
+can call it anything you like. The creation of the object is often called the instantiation
+of the object, or instance, of the class.
+
+类方法在perl里的析构函数叫做new,用来创建一个对象。
+
+instance methods (also called access methods): You can't use an instance method until 
+you have created the object. The method that creates the object is called a constructor.
+ It returns a reference to the object. Once the reference to the newly created object 
+is returned, the instance method uses that reference, often called $this or $self, 
+to get at the object.
+实例方法一定要在对象已经建立后才可用。当创建完一个对象后，析构函数回返回一个引用（指针），这个引用
+（常叫做$this or $self） 就作为实例方法的第一个参数来获得对象。
+
+### 　Invoking Methods 调用方法
+methods are invoked in one of two ways: class method invocation or instance method invocation.
+There are two types of syntax for each method call: object-oriented syntax and indirect
+ syntax. If you are using objects, either syntax for these method calls is acceptable.
+ The older way of calling methods with the double colons is not recommended.
+方法调用有两种：类方法调用和实例方法调用
+每种方法都有两种调用策略：面向对象语法(object-oriented)与间接语法（indirect)。
+
+####Class Method Invocation 类方法调用
+Assume the method name is called new and the return value, $ref, is a pointer to the object.
+1) $ref = class->new( list of arguments );   # object-oriented syntax
+2) $ref = new class ( list of arguments );   # indirect syntax
+
+If the class is called House, Perl translates
+        $ref = House->new();
+to
+        $ref = House::new(House);
+
+#####Instance Method Invocation 实例方法调用
+Assume the method name is called display and the reference to the object is called $ref.
+
+1) $ref->display( list of arguments );    # object-oriented syntax
+2) display $ref ( list of arguments );    # indirect syntax
+
+$ref points to an object in a class called House, Perl translates that to
+House::display($ref, arguments...);
+
+
+
+######### 14.2.7 What an Object-Oriented Module Looks like
+
+
+主要以书上的Figure14.3为栗子进行解释。
+The package will be called a class; so, this is the House class.
+The class consists of subroutines, now called methods. The first type of method, 
+called new, is a constructor method. It is the method that will define and 
+create (construct) the object. When a user of this module calls the method new, 
+he will get back a reference to the newly created House object (the address of the house).
+
+ The new method gets the name of the class as it first argument. This method not only
+ creates the object but also blesses the object so that the object always knows what 
+class (package) it belongs to.
+
+The instance methods must have a reference to the object in order to access the right 
+object. The instance methods always get a reference to the object as their first argument.
+
+The second two methods are called access, or instance, methods. 
+
+创建一个名字叫  House.pm的块。这个类就叫House了。注意pm的名字和类的名字是一样的。
+类方法： New子函数就是类方法，析构函数，创建这个对象，系统会把第一个参数传入作为对象名。定义一个空匿名哈希，引用指向它。
+ bless这个引用与对象，那么引用就是指向这个对象的指针啦。
+实例方法： Setdata 和getdata 就是实例方法，一个来设定值，一个来提取值。
+我把　Figure14.3调试如下：
+House.pm:
+package House;
+sub new{
+    my $class=shift;
+    my $ref={};
+    bless($ref,$class);
+    return $ref;
+}
+
+# the new version of new subroutine
+sub new{
+    my $class=shift;
+    my $ref={};
+    print "Before blessed,\$ref is $ref.\n ";
+    bless($ref,$class);
+    print "After blessed,\$ref is $ref.\nAnd the context of \$ref is ", ref($ref),".\n";
+    return $ref;
+}
+
+sub setdata{
+    my $self=shift;
+    $self->{"Name"}="Christine";
+}
+
+sub getdata{
+    my $self=shift;
+   print $self->{"Name"},"\n";
+}
+1;
+
+#### to invoke House.pm
+print "\n-------- To invoke House.pm,Figure 14.3---\n";
+use House;
+$obj1=House->new();
+$obj1->setdata();
+$obj1->getdata();
+
+[OUTPUT}:
+Christine
+
+[OUTPUT with new version of new subroutine]:
+Before blessed,$ref is HASH(0x7fa4e800c510).
+After blessed,$ref is House=HASH(0x7fa4e800c510).
+And the context of $ref is House.
+Christine
+
+
+#######The Class Constructor Method
+Constructor is an OOP term for a class method that creates and initializes an object 
+into a class. There is no special syntax for a constructor. It is just a method that
+ is used to get a reference blessed into a package. 
+构造函数是个面向对象名词，是创建和为一个对象初始化入一个类的方法。没特别的语法，
+就是个把引用bless进一个包的方法罢了。
+
+The object that is blessed into the new subroutine is usually an anonymous hash 
+or anonymous array. The anonymous hash or array is assigned the data that describes
+ the object. The data is often described as the properties, or attributes, of the object.
+Bless的对象一般都建成匿名哈希或者匿名数组。被赋予描述对象的数据。这些被赋予的数据，就是属性或特性（attributes）
+
+
+# Example 14.4:
+
+House.pm:
+package House;
+sub new{
+    my $class=shift;
+    my $ref={"Owner"=>undef,
+        "Price"=>undef,
+    };
+    bless($ref,$class);
+    return $ref;
+}
+1;
+
+在主程序调用构造函数的两种方法：
+use House;
+my $Houseref=House->new();
+my $Houseref=new House;
+
+
+##The Class and Instance Methods
+Object-oriented programs often use access, or instance, methods to control the way data 
+is modified, retrieved, and displayed. In order to manipulate an object, the instance,
+ or access, methods require an instance of an object; that is, a reference to an object 
+that has already been created.
+入口方法，或称实例方法来操作类中数据。首先是得有一个对象吧。就是构造函数创建出的引用指向的对象。
+Instance methods take an object reference as their first argument.
+
+
+Remember, the first argument passed to an instance method is always a reference to 
+the object, making Tom Savage the second argument:
+注意，　传递进实例方法的第一个参数，总是对象指针（指向对象的引用）
+$house->set_owner ("Tom Savage") translates to 
+House::set_owner($house, "Tom Savage");
+
+在主程序中：
+print "\n-------- Example 14.4---\n";
+use House;
+my $houseref=House->new();
+print "\$Houseref is in main belongs to class ",ref($houseref),"\n";
+$houseref->set_owner("Christine Mei");
+$houseref->display_owner;
+
+[OUTPUT]:
+$Houseref is in main belongs to class House
+Christine Mei
+
+
+#####Passing Parameters to Constructor Methods 给构造函数传递参数。
+Instance variables are used to initialize the object when it is created. In this way, 
+each time the object is created, it can be customized.
+They are called instance variables because they come into existence when the object
+ is created, or instantiated. Either an anonymous hash or an anonymous array is 
+commonly used to hold the instance variables.
+
+实例变量可以在对象建立时为其初始化。在对象建立时引用所指向的匿名哈希或数组，就成了这些实例变量的载体。
+
+Example 14.6 的模块代码house.pm
+#Example 14.6 passing parameters to constructor functions.
+
+
+sub new{
+    my $class=shift;
+    my ($owner,$salary)=@_;
+    my $ref={"Owner"=>$owner,
+        "Price"=>$salary,
+    };
+    #print "Before blessed,\$ref is $ref.\n ";
+    bless($ref,$class);
+    print "After blessed,\$ref is $ref.\n";#And the context of \$ref is ", ref($ref),".\n";
+    return $ref;
+}
+
+sub display_object{
+    my $self=shift;
+     while (my ($key,$value)= each %$self)
+    {
+        print "$key: $value \n";
+    }
+}
+1;
+
+相应调用它的主程序：
+#### Example 14.6
+print "\n-------- Example 14.6---\n";
+use House;
+my $house1=House->new("Robin",80000);
+my $house2=House->new("Christine",2);
+$house1->display_object;
+$house2->display_object;
+print "\$house1:$house1;\$house2:$house2\n";
+
+[OUTPUT]:
+After blessed,$ref is House=HASH(0x7f9e4400b5a0).
+After blessed,$ref is House=HASH(0x7f9e4400b648).
+Price: 80000 
+Owner: Robin 
+Owner: Christine 
+Price: 2 
+$house1:House=HASH(0x7f9e4400b5a0);$house2:House=HASH(0x7f9e4400b648)
+
+
+
+########Passing Parameters to Instance Methods 给实例方法传递参数
+The first argument to an instance method is always a reference to the object. 
+The remaining arguments are then processed as they are in any regular subroutine.
+传递进实例方法的第一个参数，始终是指向所在对象的引用，或称指针。剩下的参数，传递进来的情形于普通函数一般无二。
+
+14.7的模块代码：
+sub new{
+    my $class=shift;
+    my ($owner,$salary,$style)=@_;
+    my $ref={"Owner"=>$owner,
+        "Price"=>$salary,
+        "Style"=>$style,
+    };
+    bless($ref,$class);
+    return $ref;
+}
+
+sub display{
+    my $self=shift;
+    foreach $key( @_ )
+    {
+        print "$key: $$self{$key}\n";
+        # print "$key:$self->{$key}\n";  two ways to display. 
+    }
+}
+1;
+
+调用它的主程序：
+print "\n-------- Example 14.6 Passing parameters to instance methods---\n";
+
+use House;
+my $house=House->new("Ken",50000,"Sdney D");
+$house->display("Owner","Style");
+
+[OUTPUT]
+-------- Example 14.6 Passing parameters to instance methods---
+Owner: Ken
+Style: Sdney D
+
+注： 上面的 new函数：
+The key/value pairs are called the properties, or attributes, of the object. 
+The values are passed in as arguments to the constructor. 
+The blessing creates an object. The object, referenced by $ref, is blessed into 
+the House class so Perl can keep track of the package where the object belongs.
+
+主程序里$house->display("Owner","Style");
+The instance method is called with arguments. The first argument is a pointer to 
+the object, $house, even though you can't see it. The rest of the arguments, 
+provided by the user, are in parentheses.

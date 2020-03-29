@@ -177,5 +177,11 @@ sub gifts;     # Forward declaration
 
 
 
+my $ptr={'Name'=>"John"};
+print $$ptr{"Name"},"\n";
+print " The second:",$ptr->{"Name"},"\n";
 
+my $x="Christine is a fool.";
+$p=\$x;
+print "the content of \$x is:",$$p,"\n";
 
